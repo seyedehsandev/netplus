@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معماری اترنت و هنر آدرس‌دهی IP - فصل چهارم Network+</title>
+    <style>
+        /* --- General Styles & "Digital Matrix" Theme --- */
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
+
+        :root {
+            --bg-color: #000000;
+            --primary-card-bg: #0a0a0a;
+            --secondary-card-bg: #141414;
+            --text-color: #00ff41; /* Matrix Green */
+            --header-color: #ffffff;
+            --primary-accent: #00ff41;
+            --secondary-accent: #f0f0f0; /* White/Light Gray for contrast */
+            --golden-tip-bg: rgba(255, 215, 0, 0.1); /* Gold for tips */
+            --golden-tip-border: #ffd700;
+            --header-font-weight: 900;
+            --border-radius: 10px;
+            --shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            --font-code: 'Fira Code', 'Courier New', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 2.0;
+            font-size: 18px;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="0" y="20" font-family="monospace" font-size="12" fill="rgba(0, 255, 65, 0.05)">01011001</text><text x="10" y="40" font-family="monospace" font-size="12" fill="rgba(0, 255, 65, 0.05)">11010101</text><text x="30" y="60" font-family="monospace" font-size="12" fill="rgba(0, 255, 65, 0.05)">00110101</text><text x="5" y="80" font-family="monospace" font-size="12" fill="rgba(0, 255, 65, 0.05)">10001001</text></svg>');
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- Header & Navigation --- */
+        header {
+            text-align: center;
+            padding: 80px 20px;
+            border-bottom: 3px solid var(--primary-accent);
+            animation: flicker 2s infinite alternate;
+        }
+        
+        @keyframes flicker {
+          0%, 18%, 22%, 25%, 53%, 57%, 100% {
+              text-shadow:
+              0 0 4px var(--header-color),
+              0 0 11px var(--header-color),
+              0 0 19px var(--header-color),
+              0 0 40px var(--primary-accent),
+              0 0 80px var(--primary-accent),
+              0 0 90px var(--primary-accent);
+          }
+          20%, 24%, 55% { text-shadow: none; }
+        }
+
+        header h1 {
+            font-size: 4.5rem;
+            font-weight: var(--header-font-weight);
+            color: var(--header-color);
+            margin-bottom: 15px;
+        }
+
+        header p {
+            font-size: 1.5rem;
+            color: var(--secondary-accent);
+            opacity: 0.9;
+        }
+
+        nav {
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            border-bottom: 1px solid var(--primary-accent);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            color: var(--primary-accent);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 8px 20px;
+            border: 1px solid var(--primary-accent);
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            background-color: var(--primary-accent);
+            color: var(--bg-color);
+            text-shadow: none;
+            box-shadow: 0 0 15px var(--primary-accent);
+        }
+        
+        /* --- Main Content & Sections --- */
+        main { padding: 40px 0; }
+
+        .section-card {
+            background-color: var(--primary-card-bg);
+            margin-bottom: 50px;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--primary-accent);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .section-card:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+        }
+        
+        .section-card h2 {
+            font-size: 3rem;
+            font-weight: var(--header-font-weight);
+            color: var(--secondary-accent);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-accent);
+        }
+
+        h3 {
+            font-size: 2.2rem;
+            color: var(--primary-accent);
+            margin-top: 35px;
+            margin-bottom: 20px;
+        }
+        
+        p, li { font-size: 1.15rem; }
+        strong { font-weight: 700; color: var(--secondary-accent); }
+
+        code, .code-inline {
+            background-color: var(--secondary-card-bg);
+            color: var(--primary-accent);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: var(--font-code);
+            direction: ltr;
+            font-weight: bold;
+        }
+        
+        pre {
+            background-color: var(--secondary-card-bg);
+            color: var(--secondary-accent);
+            padding: 25px;
+            border-radius: 10px;
+            overflow-x: auto;
+            border-left: 5px solid var(--primary-accent);
+            font-family: var(--font-code);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            direction: ltr;
+            margin-top: 20px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        /* --- Golden Tip Styling --- */
+        .golden-tip {
+            background-color: var(--golden-tip-bg);
+            border: 1px solid var(--golden-tip-border);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: var(--border-radius);
+        }
+        .golden-tip .tip-title {
+            font-weight: 900;
+            color: var(--golden-tip-border);
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+        .golden-tip .tip-title::before {
+            content: '💡 نکته طلایی: ';
+        }
+        .golden-tip p {
+            color: var(--secondary-accent); /* Brighter text for tips */
+            text-shadow: none;
+        }
+
+        /* --- Table Styling --- */
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border: 1px solid var(--primary-accent);
+        }
+        .custom-table th, .custom-table td {
+            border: 1px dashed var(--primary-accent);
+            padding: 15px;
+            text-align: center;
+        }
+        .custom-table th {
+            background-color: var(--primary-accent);
+            color: var(--bg-color);
+            font-size: 1.4rem;
+            text-shadow: none;
+        }
+        
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 40px;
+            border-top: 2px solid var(--primary-accent);
+            color: var(--secondary-accent);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>معماری اترنت و هنر آدرس‌دهی IP</h1>
+        <p>فصل چهارم Network+ : چگونه دستگاه‌ها یکدیگر را در شبکه پیدا و با هم صحبت می‌کنند.</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#ethernet">فریم اترنت</a></li>
+            <li><a href="#switching">منطق سوئیچینگ</a></li>
+            <li><a href="#ipv4">آدرس‌دهی IPv4</a></li>
+            <li><a href="#subnetting">جادوی سابنتینگ</a></li>
+            <li><a href="#ipv6">آدرس‌دهی IPv6</a></li>
+            <li><a href="#tools">ابزارهای ضروری IP</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <main>
+            <section id="ethernet" class="section-card">
+                <h2>کالبدشکافی اترنت: زبان مشترک LAN</h2>
+                <p>
+                    در فصل قبل با انواع کابل آشنا شدیم. حال باید بدانیم داده‌ها روی این کابل‌ها چگونه سازمان‌دهی می‌شوند. <strong>اترنت (Ethernet)</strong> محبوب‌ترین فناوری لایه دوم (پیوند داده) برای شبکه‌های محلی (LAN) است. اترنت ساختار دقیقی برای بسته‌بندی داده‌ها تعریف می‌کند که به آن <strong>فریم (Frame)</strong> می‌گویند.
+                </p>
+                <h3>ساختار فریم اترنت (Ethernet Frame)</h3>
+                <p>
+                    تصور کنید هر بسته داده‌ای که می‌خواهید ارسال کنید، باید در یک "پاکت نامه استاندارد" قرار گیرد. فریم اترنت همان پاکت نامه است.
+                </p>
+                <pre>
+[ Preamble (مقدمه) ] 7 Bytes
+[ SFD (جداکننده)  ] 1 Byte
+[ Destination MAC ] 6 Bytes  (آدرس فیزیکی گیرنده)
+[ Source MAC      ] 6 Bytes  (آدرس فیزیکی فرستنده)
+[ Type / Length   ] 2 Bytes  (نوع پروتکل لایه بالاتر، مثلاً IP)
+[ Payload (داده)   ] 46-1500 Bytes (همان پکت IP که از لایه 3 آمده)
+[ FCS (بررسی خطا) ] 4 Bytes
+                </pre>
+                <ul>
+                    <li><strong>MAC Address (آدرس فیزیکی):</strong> یک شناسه 48 بیتی منحصربه‌فرد جهانی که توسط کارخانه روی هر کارت شبکه (NIC) حک می‌شود. این آدرس به صورت هگزادسیمال نمایش داده می‌شود (مثلاً <code class="code-inline">00-1A-2B-3C-4D-5E</code>). سوئیچ‌ها برای مسیریابی ترافیک در شبکه محلی از این آدرس استفاده می‌کنند.</li>
+                    <li><strong>FCS (Frame Check Sequence):</strong> یک کد برای تشخیص خطا است. فرستنده بر اساس محتوای فریم یک مقدار CRC محاسبه کرده و در FCS قرار می‌دهد. گیرنده نیز همین محاسبه را انجام می‌دهد. اگر نتایج یکسان نباشد، فریم خراب تشخیص داده شده و دور انداخته می‌شود.</li>
+                </ul>
+                <div class="golden-tip">
+                    <p class="tip-title">تفاوت آدرس IP و MAC</p>
+                    <p>
+                        این یکی از بنیادی‌ترین مفاهیم شبکه است! <strong>آدرس MAC</strong> مانند <strong>کد ملی</strong> شماست؛ ثابت، منحصربه‌فرد و از بدو تولد (تولید کارت شبکه) همراه شماست. <strong>آدرس IP</strong> مانند <strong>آدرس پستی منزل</strong> شماست؛ می‌تواند تغییر کند (اگر اسباب‌کشی کنید). <br>
+                        <strong>روترها</strong> (لایه ۳) برای ارسال داده بین شهرهای مختلف (شبکه‌های مختلف) به آدرس پستی (IP) نگاه می‌کنند.<br>
+                        <strong>سوئیچ‌ها</strong> (لایه ۲) برای تحویل نامه به شخص صحیح داخل یک ساختمان (شبکه محلی) به کد ملی (MAC) نگاه می‌کنند.
+                    </p>
+                </div>
+            </section>
+            
+            <section id="switching" class="section-card">
+                <h2>منطق هوشمندانه سوئیچینگ</h2>
+                <p>سوئیچ‌ها قلب تپنده شبکه‌های LAN مدرن هستند. برخلاف هاب‌های قدیمی که ترافیک را کورکورانه برای همه ارسال می‌کردند (Broadcast)، سوئیچ‌ها هوشمندانه عمل می‌کنند. این هوشمندی از طریق یک جدول به نام <strong>MAC Address Table</strong> حاصل می‌شود.</p>
+                <h3>فرآیند یادگیری و ارسال سوئیچ:</h3>
+                <ol>
+                    <li><strong>یادگیری (Learning):</strong> وقتی یک فریم وارد یکی از پورت‌های سوئیچ می‌شود (مثلاً پورت 1)، سوئیچ به آدرس MAC مبدأ (<code class="code-inline">Source MAC</code>) آن نگاه می‌کند. سپس در جدول خود ثبت می‌کند که "دستگاه با این MAC Address به پورت 1 متصل است."</li>
+                    <li><strong>فوروارد یا فیلتر (Forwarding/Filtering):</strong> سپس سوئیچ به آدرس MAC مقصد (<code class="code-inline">Destination MAC</code>) نگاه می‌کند.
+                        <ul>
+                            <li><strong>حالت ۱ (آدرس مقصد در جدول است):</strong> سوئیچ فریم را <strong>فقط</strong> به همان پورتی که آدرس مقصد در آن ثبت شده ارسال می‌کند (Forwarding).</li>
+                            <li><strong>حالت ۲ (آدرس مقصد در جدول نیست):</strong> اگر سوئیچ نداند آدرس MAC مقصد کجاست، فریم را به <strong>تمام پورت‌ها</strong> به جز پورت ورودی ارسال می‌کند (Flooding/Broadcast).</li>
+                        </ul>
+                    </li>
+                </ol>
+                <pre>
+-- سناریو: PC A (MAC: AAAA) می‌خواهد به PC C (MAC: CCCC) داده بفرستد --
+
+1. فریم از PC A وارد پورت 1 سوئیچ می‌شود.
+   سوئیچ: "آها! MAC AAAA در پورت 1 است." -> آن را در جدول MAC خود ثبت می‌کند.
+
+2. سوئیچ به MAC مقصد (CCCC) نگاه می‌کند. فرض کنیم اولین بار است و آن را در جدول ندارد.
+   سوئیچ: "نمی‌دانم CCCC کجاست!" -> فریم را به پورت‌های 2، 3 و 4 ارسال می‌کند.
+
+3. PC B و PC D فریم را دریافت می‌کنند، می‌بینند برای آن‌ها نیست و آن را دور می‌اندازند.
+   PC C فریم را دریافت کرده و یک پاسخ برای PC A ارسال می‌کند.
+
+4. فریم پاسخ از PC C وارد پورت 3 می‌شود.
+   سوئیچ: "آها! MAC CCCC در پورت 3 است." -> آن را در جدول ثبت می‌کند.
+   حالا سوئیچ می‌داند که AAAA در پورت 1 و CCCC در پورت 3 است. از این به بعد ارتباط بین این دو به صورت مستقیم و بدون Broadcast خواهد بود.
+                </pre>
+                 <div class="golden-tip">
+                    <p class="tip-title">خطر! حلقه‌های سوئیچینگ (Switching Loops)</p>
+                    <p>
+                        اگر دو سوئیچ با دو کابل به هم متصل شوند، یک "حلقه" ایجاد می‌شود. یک فریم Broadcast می‌تواند برای همیشه در این حلقه بچرخد و تکثیر شود و در عرض چند ثانیه کل شبکه را از کار بیندازد (Broadcast Storm). برای جلوگیری از این فاجعه، سوئیچ‌ها از <strong>پروتکل درخت پوشا (Spanning Tree Protocol - STP)</strong> استفاده می‌کنند که به طور خودکار یکی از مسیرهای اضافی را مسدود (Block) می‌کند تا حلقه از بین برود.
+                    </p>
+                </div>
+            </section>
+
+            <section id="ipv4" class="section-card">
+                <h2>آدرس‌دهی IPv4: آدرس‌های اینترنتی نسل چهارم</h2>
+                <p>
+                    آدرس پروتکل اینترنت نسخه ۴ (IPv4) یک آدرس <strong>منطقی</strong> ۳۲ بیتی است که برای شناسایی دستگاه‌ها در یک شبکه استفاده می‌شود. این آدرس معمولاً به صورت چهار عدد (هر عدد یک اکتت یا ۸ بیت) که با نقطه از هم جدا شده‌اند نمایش داده می‌شود (Dotted-Decimal Notation).
+                </p>
+                <p>مثال: <code class="code-inline">192.168.1.10</code></p>
+                <p>هر کدام از این اعداد می‌تواند مقداری بین ۰ تا ۲۵۵ داشته باشد، زیرا هر اکتت ۸ بیت است و <code class="code-inline">2^8 = 256</code> حالت (۰ تا ۲۵۵) را پوشش می‌دهد.</p>
+                
+                <h3>اجزای یک آدرس IP: شناسه شبکه و شناسه میزبان</h3>
+                <p>
+                    هر آدرس IP از دو بخش تشکیل شده است:
+                    <ul>
+                        <li><strong>Network ID:</strong> بخشی از آدرس که به تمام دستگاه‌های یک شبکه مشترک است (مانند کد شهر).</li>
+                        <li><strong>Host ID:</strong> بخشی از آدرس که هر دستگاه را در آن شبکه منحصربه‌فرد می‌کند (مانند شماره پلاک خانه).</li>
+                    </ul>
+                    این تفکیک توسط <strong>Subnet Mask</strong> انجام می‌شود.
+                </p>
+                
+                <h3>ماسک زیرشبکه (Subnet Mask)</h3>
+                <p>
+                    سابنت مسک یک آدرس ۳۲ بیتی دیگر است که مشخص می‌کند کدام بیت‌های آدرس IP مربوط به شناسه شبکه (بیت‌های 1) و کدام مربوط به شناسه میزبان (بیت‌های 0) هستند.
+                </p>
+                <pre>
+آدرس IP:     192.168.1.10   -> 11000000.10101000.00000001.00001010
+ماسک زیرشبکه: 255.255.255.0  -> 11111111.11111111.11111111.00000000
+----------------------------------------------------------------------
+نتیجه:
+شناسه شبکه (Network ID):    192.168.1.0   (24 بیت اول)
+شناسه میزبان (Host ID):            .10   (8 بیت آخر)
+                </pre>
+                 <div class="golden-tip">
+                    <p class="tip-title">آدرس‌های خصوصی (Private) و عمومی (Public)</p>
+                    <p>
+                       تمام ۴.۳ میلیارد آدرس IPv4 برای استفاده در اینترنت عمومی کافی نیست. به همین دلیل محدوده‌هایی به نام <strong>آدرس‌های خصوصی</strong> (استاندارد RFC 1918) تعریف شده‌اند که هر کسی می‌تواند در شبکه داخلی خود از آن‌ها استفاده کند. این آدرس‌ها در اینترنت مسیریابی نمی‌شوند.
+                       <ul>
+                           <li><code class="code-inline">10.0.0.0</code> تا <code class="code-inline">10.255.255.255</code></li>
+                           <li><code class="code-inline">172.16.0.0</code> تا <code class="code-inline">172.31.255.255</code></li>
+                           <li><code class="code-inline">192.168.0.0</code> تا <code class="code-inline">192.168.255.255</code></li>
+                       </ul>
+                       برای اتصال به اینترنت، دستگاه شما از طریق روتر و فرآیندی به نام <strong>NAT (Network Address Translation)</strong> از یک آدرس عمومی (Public) که توسط ISP شما تخصیص داده شده، استفاده می‌کند.
+                    </p>
+                </div>
+                 <div class="golden-tip">
+                    <p class="tip-title">آدرس APIPA</p>
+                    <p>
+                        اگر کامپیوتر شما برای گرفتن آدرس IP از سرور DHCP تنظیم شده باشد اما نتواند سرور را پیدا کند، به طور خودکار یک آدرس از محدوده <strong>APIPA (Automatic Private IP Addressing)</strong> به خود اختصاص می‌دهد: <code class="code-inline">169.254.x.x</code>. دیدن این آدرس یک سرنخ بزرگ در عیب‌یابی است و یعنی "من نتوانستم با سرور DHCP ارتباط برقرار کنم!"
+                    </p>
+                </div>
+            </section>
+            
+            <section id="subnetting" class="section-card">
+                <h2>جادوی سابنتینگ: تقسیم یک شبکه بزرگ به شبکه‌های کوچک‌تر</h2>
+                <p>
+                    سابنتینگ (Subnetting) فرآیند تقسیم یک شبکه بزرگ به چندین زیرشبکه (Subnet) کوچک‌تر است. این کار به دلایل امنیتی (جداسازی دپارتمان‌ها)، مدیریتی و بهینه‌سازی عملکرد انجام می‌شود.
+                </p>
+                <p>
+                    جادوی سابنتینگ در <strong>"قرض گرفتن" بیت‌ها از بخش Host ID</strong> و اضافه کردن آنها به بخش Network ID است. با هر بیت که قرض می‌گیریم، تعداد زیرشبکه‌ها دو برابر و تعداد میزبان‌ها در هر زیرشبکه نصف می‌شود.
+                </p>
+                <h3>مثال گام به گام سابنتینگ:</h3>
+                <p>فرض کنید شبکه <code class="code-inline">192.168.10.0/24</code> را داریم و می‌خواهیم آن را به حداقل ۴ زیرشبکه تقسیم کنیم.</p>
+                <ol>
+                    <li><strong>محاسبه بیت‌های مورد نیاز:</strong> برای ساختن ۴ زیرشبکه، به <code class="code-inline">n</code> بیت نیاز داریم به طوری که <code class="code-inline">2^n >= 4</code> باشد. در اینجا <code class="code-inline">n=2</code> است. (چون <code class="code-inline">2^2 = 4</code>).</li>
+                    <li><strong>قرض گرفتن بیت‌ها:</strong> ما 2 بیت از بخش میزبان (Host) قرض می‌گیریم. ماسک زیرشبکه اصلی ما /24 بود. ماسک جدید <code class="code-inline">/24 + 2 = /26</code> خواهد بود.</li>
+                    <li><strong>محاسبه ماسک جدید:</strong> <code class="code-inline">/26</code> یعنی ۲۶ بیت اول 1 هستند.
+                        <br><code>11111111.11111111.11111111.<strong>11</strong>000000</code> -> <code class="code-inline">255.255.255.192</code>.
+                    </li>
+                    <li><strong>پیدا کردن شبکه‌ها:</strong> "عدد جادویی" یا "بلوک" ما از آخرین بیت قرض گرفته شده به دست می‌آید. این بیت در اکتت چهارم، ارزش 64 را دارد. پس شبکه‌های ما 64 تا 64 تا جدا می‌شوند.
+                        <ul>
+                            <li><strong>شبکه ۱:</strong> <code class="code-inline">192.168.10.0 /26</code> (از 0 تا 63)</li>
+                            <li><strong>شبکه ۲:</strong> <code class="code-inline">192.168.10.64 /26</code> (از 64 تا 127)</li>
+                            <li><strong>شبکه ۳:</strong> <code class="code-inline">192.168.10.128 /26</code> (از 128 تا 191)</li>
+                            <li><strong>شبکه ۴:</strong> <code class="code-inline">192.168.10.192 /26</code> (از 192 تا 255)</li>
+                        </ul>
+                    </li>
+                    <li><strong>تحلیل یک زیرشبکه (مثلاً شبکه دوم):</strong>
+                        <ul>
+                            <li><strong>Network ID:</strong> <code class="code-inline">192.168.10.64</code> (آدرس شروع، غیرقابل استفاده برای میزبان)</li>
+                            <li><strong>Broadcast ID:</strong> <code class="code-inline">192.168.10.127</code> (آدرس پایان، برای ارسال به همه میزبان‌های این زیرشبکه)</li>
+                            <li><strong>Valid Host Range:</strong> <code class="code-inline">192.168.10.65</code> to <code class="code-inline">192.168.10.126</code> (آدرس‌های قابل استفاده برای دستگاه‌ها)</li>
+                        </ul>
+                    </li>
+                </ol>
+            </section>
+            
+             <section id="ipv6" class="section-card">
+                <h2>آدرس‌دهی IPv6: آینده اینترنت</h2>
+                <p>با تمام شدن آدرس‌های IPv4، استاندارد IPv6 برای حل این مشکل و ارائه قابلیت‌های جدید معرفی شد. </p>
+                <ul>
+                    <li><strong>فضای آدرس عظیم:</strong> IPv6 یک آدرس <strong>128 بیتی</strong> است. این یعنی <code class="code-inline">2^128</code> آدرس منحصربه‌فرد که عددی نجومی است (تقریباً 340 تریلیون تریلیون تریلیون آدرس!).</li>
+                    <li><strong>قالب هگزادسیمال:</strong> به صورت ۸ گروه ۴ کاراکتری هگزادسیمال (hextet) که با کالن (:) از هم جدا می‌شوند نمایش داده می‌شود.
+                        <br>مثال: <code class="code-inline">2001:0db8:85a3:0000:0000:8a2e:0370:7334</code>
+                    </li>
+                </ul>
+                <h3>قوانین ساده‌سازی IPv6:</h3>
+                <ol>
+                    <li><strong>حذف صفرهای ابتدایی (Leading Zeros):</strong> در هر hextet می‌توان صفرهای ابتدایی را حذف کرد. <br>
+                    <code class="code-inline">0db8</code> -> <code class="code-inline">db8</code> | <code class="code-inline">0370</code> -> <code class="code-inline">370</code></li>
+                    <li><strong>حذف بلوک‌های صفر (Compressed Zeros):</strong> یک دنباله متوالی از hextetهای صفر را می‌توان با دو کالن (<code class="code-inline">::</code>) جایگزین کرد.</li>
+                </ol>
+                <p>مثال کامل ساده‌سازی:</p>
+                <pre>
+آدرس اصلی:   2001:0db8:0000:0000:1234:0000:0000:5678
+ساده‌سازی:   2001:db8::1234:0:0:5678  (یک حالت ممکن)
+ساده‌سازی بهتر:
+2001:0db8:85a3:0000:0000:8a2e:0370:7334 -> 2001:db8:85a3::8a2e:370:7334
+                </pre>
+                 <div class="golden-tip">
+                    <p class="tip-title">فقط یک بار از <code class="code-inline">::</code> استفاده کنید!</p>
+                    <p>
+                       قانون فشرده‌سازی با <code class="code-inline">::</code> را فقط <strong>یک بار</strong> در هر آدرس IPv6 می‌توان به کار برد. در غیر این صورت، کامپیوتر نمی‌تواند تشخیص دهد که چند بلوک صفر حذف شده و نمی‌تواند آدرس اصلی را بازسازی کند.
+                    </p>
+                </div>
+             </section>
+
+            <section id="tools" class="section-card">
+                <h2>جعبه ابزار IP: دستورات ضروری</h2>
+                <p>دانستن این دستورات برای هر متخصص شبکه‌ای، مانند داشتن آچار برای یک مکانیک است.</p>
+
+                <h3>۱. Ping</h3>
+                <p>دستور <code>ping</code> یک بسته کوچک (ICMP Echo Request) به یک آدرس IP یا نام دامنه ارسال می‌کند و منتظر پاسخ (Echo Reply) می‌ماند. این بهترین ابزار برای تست اتصال‌پذیری اولیه است.</p>
+                <pre>
+C:\> ping 8.8.8.8
+
+Pinging 8.8.8.8 with 32 bytes of data:
+Reply from 8.8.8.8: bytes=32 time=25ms TTL=116
+Reply from 8.8.8.8: bytes=32 time=24ms TTL=116
+Reply from 8.8.8.8: bytes=32 time=26ms TTL=116
+
+Ping statistics for 8.8.8.8:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 24ms, Maximum = 26ms, Average = 25ms
+                </pre>
+                
+                <h3>۲. ipconfig (ویندوز) / ifconfig (لینوکس/مک)</h3>
+                <p>این دستور تمام تنظیمات TCP/IP کارت‌های شبکه شما را نمایش می‌دهد. استفاده از سوییچ <code>/all</code> در ویندوز اطلاعات بسیار کامل‌تری نمایش می‌دهد.</p>
+                <pre>
+C:\> ipconfig /all
+
+Ethernet adapter Ethernet:
+   ...
+   Physical Address. . . . . . . . . : 00-1A-2B-3C-4D-5E
+   IPv4 Address. . . . . . . . . . . : 192.168.1.10(Preferred)
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : 192.168.1.1
+   DHCP Server . . . . . . . . . . . : 192.168.1.1
+   DNS Servers . . . . . . . . . . . : 8.8.8.8
+                                       8.8.4.4
+                </pre>
+                <div class="golden-tip">
+                    <p class="tip-title">Default Gateway چیست؟</p>
+                    <p>
+                        Default Gateway آدرس روتر شما در شبکه محلی است. وقتی کامپیوتر شما می‌خواهد با یک IP خارج از شبکه محلی خودش صحبت کند (مثلاً google.com)، بسته‌ها را به Default Gateway ارسال می‌کند و روتر وظیفه ارسال آن به اینترنت را بر عهده می‌گیرد. اگر Default Gateway تنظیم نشده باشد، شما فقط می‌توانید با دستگاه‌های داخل شبکه LAN خودتان ارتباط برقرار کنید.
+                    </p>
+                </div>
+                <h3>۳. arp</h3>
+                <p>دستور <code>arp</code> (Address Resolution Protocol) جدولی را نمایش می‌دهد که آدرس‌های IP را به آدرس‌های MAC متناظرشان در شبکه محلی نگاشت می‌کند (ARP Cache). این پروتکل پاسخ سوال "دستگاهی با IP فلان، چه MAC آدرسی دارد؟" را پیدا می‌کند.</p>
+                <pre>
+C:\> arp -a
+
+Interface: 192.168.1.10 --- 0x1a
+  Internet Address      Physical Address      Type
+  192.168.1.1           a0-b1-c2-d3-e4-f5     dynamic
+  192.168.1.25          01-23-45-67-89-ab     dynamic
+                </pre>
+            </section>
+        </main>
+        
+        <footer>
+            <p>دانش شما در مورد اترنت و آدرس‌دهی IP، اکنون به سطح جدیدی رسیده است.</p>
+            <p>بر اساس مفاهیم بنیادی و حیاتی فصل چهارم کتاب CompTIA Network+</p>
+        </footer>
+    </div>
+
+</body>
+</html>

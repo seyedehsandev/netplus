@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تاب‌آوری شبکه: ریسک و پایداری - فصل یازدهم Network+</title>
+    <style>
+        /* --- General Styles & "Strategic Resilience Center" Theme --- */
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700;900&display=swap');
+        
+        :root {
+            --bg-color: #1c1c1c; /* Very Dark Gray */
+            --primary-card-bg: #2a2a2a;
+            --secondary-card-bg: #3c3c3c;
+            --text-color: #e5e5e5;
+            --primary-accent: #f97316; /* Bright Orange */
+            --secondary-accent: #f59e0b; /* Amber */
+            --header-font-weight: 700;
+            --border-radius: 6px;
+            --font-code: 'Consolas', 'Menlo', 'Courier New', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 2.1;
+            font-size: 18px;
+            background-image:
+                linear-gradient(rgba(249, 115, 22, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(249, 115, 22, 0.05) 1px, transparent 1px);
+            background-size: 100px 100px;
+        }
+
+        .container { width: 90%; max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+
+        /* --- Header & Navigation --- */
+        header { text-align: center; padding: 80px 20px; }
+        header h1 {
+            font-size: 4rem;
+            color: var(--primary-accent);
+            text-shadow: 0 0 10px var(--primary-accent);
+            border-bottom: 2px solid var(--secondary-accent);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        header p { font-size: 1.5rem; color: var(--text-color); opacity: 0.8;}
+
+        nav {
+            background-color: rgba(42, 42, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+        }
+        nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; }
+        nav ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 10px 22px;
+            border-radius: 50px;
+            border: 1px solid var(--secondary-card-bg);
+            transition: all 0.3s ease;
+        }
+        nav ul li a:hover, nav ul li a.active {
+            background-color: var(--primary-accent);
+            color: var(--bg-color);
+        }
+        
+        /* --- Main Content & Sections --- */
+        .section-card {
+            background-color: var(--primary-card-bg);
+            margin-bottom: 50px;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            border: 1px solid var(--secondary-card-bg);
+        }
+        
+        .section-card h2 {
+            font-size: 2.8rem;
+            color: var(--secondary-accent);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--secondary-card-bg);
+        }
+
+        h3 { font-size: 2.2rem; color: var(--primary-accent); margin: 35px 0 20px 0; }
+        strong { font-weight: bold; color: var(--secondary-accent); }
+
+        pre { background: #111; color: #e5e5e5; padding: 25px; border-radius: var(--border-radius); border-left: 4px solid var(--primary-accent); font-family: var(--font-code); direction: ltr; margin: 20px 0; }
+        
+        /* --- Image Styling --- */
+        .img-container { margin: 30px 0; text-align: center; }
+        .img-container img { max-width: 100%; height: auto; border-radius: var(--border-radius); background-color: var(--secondary-card-bg); }
+        .img-caption { font-size: 0.9rem; color: #aaa; margin-top: 10px; font-style: italic; }
+        
+        /* --- Strategy Note --- */
+        .strategy-note {
+            background-color: rgba(249, 115, 22, 0.05);
+            border-right: 4px solid var(--primary-accent);
+            padding: 25px;
+            margin: 30px 0;
+        }
+        .strategy-note .note-title { font-weight: 900; color: var(--primary-accent); font-size: 1.4rem; margin-bottom: 10px; }
+        .strategy-note .note-title::before { content: '⚙️ استراتژی کلیدی: '; }
+        
+        /* --- Custom List for Steps --- */
+        .steps-list { list-style: none; padding-right: 0; counter-reset: step-counter; }
+        .steps-list li {
+            counter-increment: step-counter;
+            margin-bottom: 30px;
+            padding-right: 55px;
+            position: relative;
+        }
+        .steps-list li::before {
+            content: "0" counter(step-counter);
+            position: absolute; right: 0; top: 5px; font-size: 1.8rem;
+            font-family: var(--font-code);
+            font-weight: bold;
+            color: var(--secondary-accent);
+            text-align: right;
+            line-height: 1;
+        }
+        .steps-list h4 {
+            font-size: 1.5rem;
+            color: var(--primary-accent);
+        }
+
+        /* --- Footer --- */
+        footer { text-align: center; padding: 40px 20px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>STRATEGIC RESILIENCE</h1>
+        <p>فصل یازدهم: مدیریت ریسک، دسترسی‌پذیری بالا و بازیابی از بحران</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#risk-mgmt">مدیریت ریسک</a></li>
+            <li><a href="#high-availability">دسترسی‌پذیری بالا</a></li>
+            <li><a href="#disaster-recovery">بازیابی از بحران</a></li>
+            <li><a href="#incident-response">واکنش به رخداد</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <main>
+            <section id="risk-mgmt" class="section-card">
+                <h2>مدیریت ریسک: آمادگی برای ناشناخته‌ها</h2>
+                <p>
+                    مدیریت ریسک فرآیند شناسایی، ارزیابی و کنترل تهدیدات برای سرمایه‌های یک سازمان است. این کار یک فرآیند مداوم است، نه یک پروژه یک‌باره. فرمول اصلی ریسک ساده است:
+                </p>
+                <pre>ریسک = احتمال وقوع یک تهدید × میزان تاثیر آن</pre>
+                
+                <h3>۱. ارزیابی ریسک (Risk Assessment)</h3>
+                <p>شما نمی‌توانید از چیزی محافظت کنید، مگر اینکه بدانید چه دارید و چه خطراتی آن را تهدید می‌کند.</p>
+                <ul>
+                    <li><strong>شناسایی دارایی‌ها (Asset Identification):</strong> لیست کردن تمام سرمایه‌های ارزشمند (سرورها، داده‌های مشتریان، اعتبار شرکت).</li>
+                    <li><strong>شناسایی تهدیدات و آسیب‌پذیری‌ها (Threat & Vulnerability Identification):</strong> چه خطراتی (طبیعی، انسانی، فنی) و چه ضعف‌هایی (نرم‌افزار وصله‌نشده، نبود فایروال) وجود دارد؟</li>
+                    <li><strong>تحلیل تاثیر (Impact Analysis):</strong> اگر این تهدید رخ دهد، چه خسارتی (مالی، اعتباری) به ما وارد می‌شود؟</li>
+                </ul>
+                <div class="img-container">
+                    <img src="https://placehold.co/900x300/2a2a2a/f97316?text=Asset + Threat + Vulnerability = Risk" alt="عناصر تشکیل‌دهنده ریسک">
+                </div>
+
+                <h3>۲. پاسخ به ریسک (Risk Response)</h3>
+                <p>پس از شناسایی و ارزیابی ریسک‌ها، چهار راه برای مواجهه با آن‌ها وجود دارد:</p>
+                <ul>
+                    <li><strong>پذیرش (Acceptance):</strong> اگر هزینه مقابله با ریسک از خسارت احتمالی آن بیشتر باشد، ممکن است تصمیم بگیریم ریسک را بپذیریم. (مثلاً ریسک خرابی یک پرینتر غیرضروری)</li>
+                    <li><strong>کاهش (Mitigation):</strong> پیاده‌سازی کنترل‌های امنیتی برای کاهش احتمال یا تاثیر ریسک. (نصب فایروال، استفاده از آنتی‌ویروس). این رایج‌ترین راه است.</li>
+                    <li><strong>انتقال (Transference):</strong> انتقال ریسک به یک شخص ثالث. (خرید بیمه سایبری).</li>
+                    <li><strong>اجتناب (Avoidance):</strong> حذف کامل فعالیت یا سیستمی که باعث ایجاد ریسک می‌شود. (عدم راه‌اندازی یک سرویس آنلاین پرخطر).</li>
+                </ul>
+            </section>
+            
+            <section id="high-availability" class="section-card">
+                <h2>دسترسی‌پذیری بالا (High Availability - HA)</h2>
+                <p>
+                    دسترسی‌پذیری بالا (HA) به طراحی سیستم‌هایی اشاره دارد که در برابر خرابی مقاوم بوده و هدف آن‌ها به حداقل رساندن زمان قطعی (Downtime) است. هسته اصلی HA، مفهوم <strong>"حذف نقاط شکست واحد" (Single Points of Failure - SPOF)</strong> است.
+                </p>
+                
+                <h3>۱. افزونگی (Redundancy)</h3>
+                <p>داشتن اجزای پشتیبان که در صورت خرابی جزء اصلی، وارد مدار شوند.</p>
+                <ul>
+                    <li><strong>افزونگی برق:</strong> استفاده از منبع تغذیه بدون وقفه (UPS) و ژنراتورهای پشتیبان.</li>
+                    <li><strong>افزونگی لینک:</strong> داشتن دو یا چند اتصال اینترنت از ISPهای مختلف.</li>
+                    <li><strong>تجمیع لینک (NIC Teaming / LACP):</strong> ترکیب چند کارت شبکه فیزیکی برای ایجاد یک لینک منطقی با سرعت و پایداری بالاتر.</li>
+                    <li><strong>افزونگی تجهیزات:</strong> داشتن روتر یا سوئیچ پشتیبان.</li>
+                </ul>
+
+                <h3>۲. تحمل خطا و خوشه‌بندی (Fault Tolerance & Clustering)</h3>
+                <p>تحمل خطا یک قدم فراتر از افزونگی است و هدف آن <strong>زمان قطعی صفر</strong> است. این کار معمولاً از طریق <strong>خوشه‌بندی (Clustering)</strong> انجام می‌شود.</p>
+                <ul>
+                    <li><strong>خوشه Active-Passive:</strong> یک سرور اصلی (Active) به درخواست‌ها پاسخ می‌دهد و یک سرور پشتیبان (Passive) آماده است تا در صورت خرابی سرور اصلی، جایگزین آن شود. یک قطعی کوتاه در حین جابجایی وجود خواهد داشت.</li>
+                    <li><strong>خوشه Active-Active:</strong> هر دو سرور به صورت همزمان فعال هستند و بار کاری (Load) بین آن‌ها توزیع می‌شود (Load Balancing). این حالت هم پایداری را افزایش می‌دهد و هم عملکرد را.</li>
+                </ul>
+                <div class="img-container">
+                    <img src="https://placehold.co/900x400/2a2a2a/e5e5e5?text=Active-Passive Cluster vs Active-Active Cluster" alt="مقایسه خوشه‌های Active-Passive و Active-Active">
+                </div>
+            </section>
+
+            <section id="disaster-recovery" class="section-card">
+                <h2>بازیابی از بحران (Disaster Recovery)</h2>
+                <p>بازیابی از بحران (DR) مربوط به زمانی است که یک فاجعه بزرگ رخ می‌دهد (مانند آتش‌سوزی یا سیل) و کل مرکز داده از کار می‌افتد. هدف، بازگرداندن عملیات در یک مکان دیگر است.</p>
+                
+                <h3>RPO و RTO: دو معیار حیاتی</h3>
+                <p>این دو معیار، اساس هر طرح بازیابی از بحران هستند و به ما می‌گویند چه انتظاری باید داشته باشیم.</p>
+                <ul>
+                    <li><strong>RPO (Recovery Point Objective):</strong> "حداکثر حجم داده‌ای که ما توانایی از دست دادن آن را داریم چقدر است؟" این معیار مشخص می‌کند که فاصله زمانی بین دو بکاپ چقدر باید باشد. RPO=1h یعنی ما حداکثر داده‌های یک ساعت آخر را از دست خواهیم داد.</li>
+                    <li><strong>RTO (Recovery Time Objective):</strong> "حداکثر زمان مجازی که برای بازگرداندن سرویس پس از بحران داریم چقدر است؟" این معیار مشخص می‌کند که چقدر سریع باید عملیات را در سایت پشتیبان از سر بگیریم. RTO=4h یعنی سرویس باید ظرف چهار ساعت برگردد.</li>
+                </ul>
+                <div class="img-container">
+                    <img src="https://placehold.co/800x450/2a2a2a/f59e0b?text=Timeline: [Disaster] --RPO--> [Last Backup] --RTO--> [Service Restored]" alt="دیاگرام مفهومی RPO و RTO">
+                    <p class="img-caption">RPO به گذشته (آخرین بکاپ) و RTO به آینده (زمان بازگشت سرویس) نگاه می‌کند.</p>
+                </div>
+
+                <div class="strategy-note">
+                    <p class="note-title">قانون طلایی بکاپ: 3-2-1</p>
+                    <p>
+                       این یک استراتژی ساده و فوق‌العاده موثر برای حفاظت از داده‌هاست:
+                       <ul>
+                           <li>حداقل <strong>3</strong> نسخه از داده‌هایتان داشته باشید (یک نسخه اصلی و دو بکاپ).</li>
+                           <li>این نسخه‌ها را بر روی <strong>2</strong> نوع رسانه مختلف ذخیره کنید (مثلاً هارد دیسک داخلی و یک NAS).</li>
+                           <li>حداقل <strong>1</strong> نسخه از بکاپ را در مکانی خارج از سایت اصلی (Off-site) نگهداری کنید (مانند یک سایت DR یا سرویس ذخیره‌سازی ابری).</li>
+                       </ul>
+                    </p>
+                </div>
+            </section>
+            
+            <section id="incident-response" class="section-card">
+                <h2>واکنش به رخداد (Incident Response)</h2>
+                <p>یک رخداد امنیتی (Incident) هرگونه رویدادی است که سیاست‌های امنیتی سازمان را نقض می‌کند. واکنش به رخداد، فرآیندی ساختاریافته برای مدیریت عواقب یک حمله سایبری است.</p>
+                <h3>شش گام واکنش به رخداد:</h3>
+                <ol class="steps-list">
+                    <li>
+                        <h4>آمادگی (Preparation)</h4>
+                        <p>مهم‌ترین مرحله که قبل از وقوع هر حمله‌ای انجام می‌شود. شامل تشکیل تیم واکنش (CSIRT)، تهیه ابزارها، و برگزاری آموزش‌های لازم.</p>
+                    </li>
+                    <li>
+                        <h4>شناسایی (Identification)</h4>
+                        <p>تشخیص اینکه آیا یک رخداد امنیتی واقعاً رخ داده است یا خیر. تحلیل لاگ‌ها، هشدارهای IDS/IPS و گزارش‌های کاربران در این مرحله انجام می‌شود.</p>
+                    </li>
+                    <li>
+                        <h4>مهار (Containment)</h4>
+                        <p>جلوگیری از گسترش آسیب. این مرحله می‌تواند شامل جداسازی سیستم آلوده از شبکه (قرنطینه کردن)، مسدود کردن آدرس‌های IP مهاجم و تغییر رمزهای عبور باشد.</p>
+                    </li>
+                     <li>
+                        <h4>ریشه‌کنی (Eradication)</h4>
+                        <p>حذف کامل عامل مخرب (بدافزار) و هرگونه اثری که از خود به جا گذاشته است. همچنین، شناسایی و رفع آسیب‌پذیری اولیه‌ای که باعث نفوذ شده، در این مرحله انجام می‌شود.</p>
+                    </li>
+                     <li>
+                        <h4>بازیابی (Recovery)</h4>
+                        <p>بازگرداندن سیستم‌های آسیب‌دیده به حالت عملیاتی عادی و پایدار. این کار می‌تواند شامل بازیابی از بکاپ‌های سالم و نظارت دقیق بر سیستم برای اطمینان از عدم بازگشت مهاجم باشد.</p>
+                    </li>
+                     <li>
+                        <h4>درس‌های آموخته‌شده (Lessons Learned)</h4>
+                        <p>پس از اینکه وضعیت به حالت عادی بازگشت، تیم باید جلسه‌ای برگزار کند تا مشخص شود چه چیزی خوب کار کرد، چه چیزی نیاز به بهبود دارد و چگونه می‌توان از وقوع رخداد مشابه در آینده جلوگیری کرد. نتایج این جلسه باید منجر به به‌روزرسانی مستندات و سیاست‌های امنیتی شود.</p>
+                    </li>
+                </ol>
+            </section>
+        </main>
+        
+        <footer>
+            <p>امیدوار بودن به بهترین‌ها، اما برنامه‌ریزی برای بدترین‌ها، نشانه یک متخصص شبکه حرفه‌ای است.</p>
+            <p>بر اساس اصول حیاتی مدیریت ریسک و تاب‌آوری از فصل یازدهم کتاب CompTIA Network+</p>
+        </footer>
+    </div>
+</body>
+</html>

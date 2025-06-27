@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>کارآگاه شبکه: مدیریت و عیب‌یابی - فصل نهم Network+</title>
+    <style>
+      /* --- General Styles & "Network Operations Center / War Room" Theme --- */
+      @import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700;900&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap");
+
+      :root {
+        --bg-color: #111827; /* Dark Slate Blue */
+        --primary-card-bg: #1f2937;
+        --secondary-card-bg: #374151;
+        --text-color: #d1d5db;
+        --primary-accent: #fbbf24; /* Amber/Gold */
+        --secondary-accent: #38bdf8; /* Sky Blue */
+        --header-font-weight: 700;
+        --border-radius: 8px;
+        --shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+        --font-code: "Roboto Mono", "Vazirmatn", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Vazirmatn", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 2;
+        font-size: 18px;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      /* --- Header & Navigation --- */
+      header {
+        text-align: center;
+        padding: 80px 20px;
+        border-bottom: 2px solid var(--primary-accent);
+      }
+
+      header h1 {
+        font-family: var(--font-code);
+        font-size: 3.5rem;
+        color: var(--primary-accent);
+        text-shadow: 0 0 10px var(--primary-accent);
+        margin-bottom: 20px;
+      }
+
+      header p {
+        font-size: 1.4rem;
+        color: var(--text-color);
+      }
+
+      nav {
+        background-color: rgba(31, 41, 55, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 15px 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+        border-bottom: 1px solid var(--secondary-accent);
+      }
+
+      nav ul {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      nav ul li a {
+        color: var(--text-color);
+        text-decoration: none;
+        font-weight: 700;
+        padding: 10px 22px;
+        border-radius: var(--border-radius);
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+      }
+      nav ul li a:hover,
+      nav ul li a.active {
+        background-color: var(--secondary-accent);
+        color: var(--bg-color);
+        border-color: var(--secondary-accent);
+      }
+
+      /* --- Main Content & Sections --- */
+      .section-card {
+        background-color: var(--primary-card-bg);
+        margin-bottom: 50px;
+        padding: 40px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--secondary-card-bg);
+      }
+
+      .section-card h2 {
+        font-family: var(--font-code);
+        font-size: 2.5rem;
+        color: var(--secondary-accent);
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--secondary-card-bg);
+      }
+
+      h3 {
+        font-family: var(--font-code);
+        font-size: 1.8rem;
+        color: var(--primary-accent);
+        margin: 35px 0 20px 0;
+      }
+      strong {
+        font-weight: bold;
+        color: var(--secondary-accent);
+      }
+
+      pre {
+        background: #000;
+        color: #f0f0f0;
+        padding: 25px;
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--primary-accent);
+        font-family: var(--font-code);
+        direction: ltr;
+        margin: 20px 0;
+        font-size: 1rem;
+      }
+
+      /* --- Image Styling --- */
+      .img-container {
+        margin: 30px 0;
+        text-align: center;
+      }
+      .img-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: var(--border-radius);
+        background-color: var(--secondary-card-bg);
+        border: 1px solid var(--primary-accent);
+      }
+      .img-caption {
+        font-size: 0.9rem;
+        color: #9ca3af;
+        margin-top: 10px;
+        font-style: italic;
+      }
+
+      /* --- Detective's Notes (Golden Tip) Styling --- */
+      .detective-note {
+        background-color: rgba(251, 191, 36, 0.05);
+        border: 1px solid var(--primary-accent);
+        padding: 25px;
+        margin: 30px 0;
+        border-radius: var(--border-radius);
+      }
+      .detective-note .note-title {
+        font-weight: 900;
+        color: var(--primary-accent);
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+      }
+      .detective-note .note-title::before {
+        content: " پرونده کارآگاه: ";
+      }
+
+      /* --- Troubleshooting Methodology List --- */
+      .troubleshooting-steps {
+        list-style: none;
+        padding-right: 0;
+        counter-reset: step-counter;
+      }
+      .troubleshooting-steps li {
+        counter-increment: step-counter;
+        margin-bottom: 25px;
+        padding-right: 50px;
+        position: relative;
+      }
+      .troubleshooting-steps li::before {
+        content: counter(step-counter);
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--bg-color);
+        background-color: var(--secondary-accent);
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 35px;
+      }
+
+      /* --- Footer --- */
+      footer {
+        text-align: center;
+        padding: 40px 20px;
+        margin-top: 40px;
+        border-top: 1px solid var(--secondary-accent);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>[ Network Troubleshooting ]</h1>
+      <p>فصل نهم: هنر نظارت، مدیریت و عیب‌یابی شبکه</p>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="#monitoring">نظارت بر شبکه</a></li>
+        <li><a href="#snmp">پروتکل SNMP</a></li>
+        <li><a href="#methodology">متدولوژی عیب‌یابی</a></li>
+        <li><a href="#cli-tools">ابزار خط فرمان</a></li>
+        <li><a href="#hardware-tools">ابزار سخت‌افزاری</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <main>
+        <section id="monitoring" class="section-card">
+          <h2>بخش اول: هنر نظارت بر شبکه (Network Monitoring)</h2>
+          <p>
+            شما نمی‌توانید چیزی را که نمی‌بینید، مدیریت یا عیب‌یابی کنید. نظارت
+            بر شبکه فرآیند مداوم جمع‌آوری و تحلیل داده‌ها برای اطمینان از سلامت،
+            عملکرد و در دسترس بودن شبکه است. هدف اصلی، شناسایی مشکلات قبل از
+            اینکه کاربران متوجه آن‌ها شوند.
+          </p>
+          <h3>خط پایه (Baseline)</h3>
+          <p>
+            یک <strong>خط پایه</strong>، تصویری از عملکرد "عادی" شبکه شما در یک
+            دوره زمانی مشخص است. بدون داشتن یک خط پایه، شما نمی‌دانید که آیا
+            "استفاده 80% از CPU روتر" یک وضعیت بحرانی است یا یک روال عادی در
+            ساعات اوج کاری. معیارهای کلیدی برای ایجاد خط پایه عبارتند از:
+          </p>
+          <ul>
+            <li>
+              <strong>میزان استفاده از لینک (Link Utilization):</strong> درصد
+              پهنای باندی که در حال استفاده است.
+            </li>
+            <li>
+              <strong>میزان استفاده از CPU و حافظه:</strong> عملکرد پردازنده و
+              رم دستگاه‌های کلیدی مانند روترها و سوئیچ‌ها.
+            </li>
+            <li>
+              <strong>نرخ خطا (Error Rate):</strong> تعداد پکت‌ها یا فریم‌هایی
+              که با خطا مواجه می‌شوند.
+            </li>
+          </ul>
+          <h3>لاگ‌ها (Logs)</h3>
+          <p>
+            لاگ‌ها سوابق رویدادهایی هستند که در سیستم‌ها و دستگاه‌های شبکه رخ
+            می‌دهند. آن‌ها گنجینه‌ای از اطلاعات برای عیب‌یابی و ممیزی امنیتی
+            هستند. <strong>Syslog</strong> یک پروتکل استاندارد برای ارسال
+            پیام‌های لاگ از دستگاه‌های مختلف (کلاینت‌ها) به یک سرور مرکزی
+            (Syslog Server) است. این کار مدیریت و تحلیل لاگ‌ها را بسیار ساده‌تر
+            می‌کند.
+          </p>
+        </section>
+
+        <section id="snmp" class="section-card">
+          <h2>SNMP: پروتکل مدیریت ساده شبکه</h2>
+          <p>
+            <strong>SNMP (Simple Network Management Protocol)</strong> یک پروتکل
+            لایه کاربرد است که به مدیران شبکه اجازه می‌دهد تا اطلاعات را از
+            دستگاه‌های مختلف شبکه جمع‌آوری کرده و آن‌ها را مدیریت کنند. SNMP
+            ستون فقرات اکثر سیستم‌های نظارت بر شبکه است.
+          </p>
+          <h3>اجزای اصلی SNMP:</h3>
+          <ul>
+            <li>
+              <strong>Network Management Station (NMS):</strong> نرم‌افزار مرکزی
+              که بر روی سرور مدیر شبکه اجرا می‌شود و تمام داده‌ها را جمع‌آوری،
+              تحلیل و نمایش می‌دهد.
+            </li>
+            <li>
+              <strong>Agent:</strong> یک نرم‌افزار کوچک که بر روی هر دستگاه تحت
+              مدیریت (مانند روتر، سوئیچ یا سرور) اجرا می‌شود و به درخواست‌های
+              NMS پاسخ می‌دهد.
+            </li>
+            <li>
+              <strong>Management Information Base (MIB):</strong> یک پایگاه داده
+              سلسله‌مراتبی و ساختاریافته که تمام اطلاعات قابل مدیریت در یک
+              دستگاه را توصیف می‌کند. هر قطعه اطلاعات با یک شناسه منحصربه‌فرد به
+              نام <strong>OID (Object Identifier)</strong> مشخص می‌شود.
+            </li>
+          </ul>
+          <div class="img-container">
+            <img
+              src="https://placehold.co/900x400/1F2937/fbbf24?text=NMS <--> SNMP Requests <--> Agent on [Router]"
+              alt="معماری SNMP"
+            />
+            <p class="img-caption">
+              ایستگاه مدیریت شبکه (NMS) اطلاعات را از طریق Agent روی دستگاه‌ها
+              جمع‌آوری می‌کند.
+            </p>
+          </div>
+          <h3>پیام‌های اصلی SNMP:</h3>
+          <ul>
+            <li>
+              <code>GET</code>: NMS از Agent درخواست مقدار یک OID خاص را می‌کند.
+            </li>
+            <li>
+              <code>SET</code>: NMS مقدار یک OID را بر روی Agent تغییر می‌دهد
+              (برای پیکربندی).
+            </li>
+            <li>
+              <code>TRAP</code>: یک پیام ناهمگام (Asynchronous) که توسط Agent و
+              بدون درخواست قبلی از NMS ارسال می‌شود تا یک رویداد مهم (مانند
+              خاموش شدن یک پورت) را اطلاع دهد.
+            </li>
+          </ul>
+          <div class="detective-note">
+            <p class="note-title">نسخه‌های SNMP و امنیت</p>
+            <p>
+              <strong>SNMPv1</strong> و <strong>SNMPv2c</strong> از یک رشته متنی
+              ساده به نام <strong>Community String</strong> برای احراز هویت
+              استفاده می‌کنند که به صورت متن آشکار (Plain Text) در شبکه ارسال
+              می‌شود و بسیار ناامن است. <strong>SNMPv3</strong> امن‌ترین نسخه
+              است که قابلیت‌های قوی احراز هویت (Authentication) و رمزنگاری
+              (Encryption) را برای محافظت از داده‌های مدیریتی ارائه می‌دهد.
+              همیشه از SNMPv3 استفاده کنید.
+            </p>
+          </div>
+        </section>
+
+        <section id="methodology" class="section-card">
+          <h2>بخش دوم: متدولوژی عیب‌یابی شبکه (The 7 Steps)</h2>
+          <p>
+            عیب‌یابی موثر، یک هنر است که بر اساس یک فرآیند علمی و ساختاریافته
+            بنا شده. دنبال کردن این هفت گام به شما کمک می‌کند تا از سردرگمی
+            جلوگیری کرده و مشکلات را به صورت منطقی و سریع حل کنید.
+          </p>
+          <div class="img-container">
+            <img
+              src="https://placehold.co/1200x500/1F2937/d1d5db?text=Troubleshooting+Methodology+Flowchart"
+              alt="فلوچارت مراحل عیب‌یابی"
+            />
+          </div>
+          <ol class="troubleshooting-steps">
+            <li>
+              <strong>شناسایی مشکل:</strong> اطلاعات را از کاربر جمع‌آوری کنید.
+              سوالات دقیق بپرسید: "اینترنت قطع است" خیلی کلی است، اما "نمی‌توانم
+              به وب‌سایت خاصی دسترسی پیدا کنم ولی بقیه سایت‌ها باز می‌شوند" یک
+              سرنخ عالی است. دامنه مشکل را مشخص کنید (یک کاربر، یک دپارتمان یا
+              همه؟).
+            </li>
+            <li>
+              <strong>ایجاد یک تئوری برای علت احتمالی:</strong> بر اساس شواهد،
+              یک فرضیه ایجاد کنید. از رویکرد بالا به پایین (از لایه کاربرد به
+              فیزیکی) یا پایین به بالا استفاده کنید. مثال فرضیه: "احتمالاً مشکل
+              از کابل شبکه است" یا "احتمالاً سرور DNS پاسخ نمی‌دهد".
+            </li>
+            <li>
+              <strong>آزمایش تئوری:</strong> فرضیه خود را تست کنید. اگر فکر
+              می‌کنید مشکل از کابل است، آن را با یک کابل سالم تعویض کنید. اگر
+              فکر می‌کنید مشکل از DNS است، از دستور
+              <code>nslookup</code> استفاده کنید. اگر فرضیه رد شد، به مرحله ۲
+              برگردید و یک تئوری جدید بسازید.
+            </li>
+            <li>
+              <strong>ایجاد یک برنامه اقدام:</strong> پس از تایید علت اصلی، یک
+              برنامه برای رفع آن تهیه کنید. تاثیرات احتمالی را در نظر بگیرید
+              (آیا رفع این مشکل باعث قطعی سرویس دیگری می‌شود؟).
+            </li>
+            <li>
+              <strong>اجرای راه‌حل:</strong> راه‌حل را پیاده‌سازی کنید. در صورت
+              نیاز، مشکل را به سطح بالاتر (تیم ارشد یا یک وندور دیگر) ارجاع
+              (Escalate) دهید.
+            </li>
+            <li>
+              <strong>تأیید عملکرد کامل و اجرای اقدامات پیشگیرانه:</strong>
+              مطمئن شوید که مشکل به طور کامل حل شده و هیچ عارضه جانبی
+              ناخواسته‌ای ایجاد نشده است. از خود بپرسید: "چگونه می‌توانم از
+              تکرار این مشکل در آینده جلوگیری کنم؟".
+            </li>
+            <li>
+              <strong>مستندسازی:</strong> یافته‌ها، اقدامات انجام شده و نتیجه
+              نهایی را به طور کامل مستند کنید. این مستندات برای مراجعات بعدی و
+              برای همکاران شما بسیار ارزشمند است.
+            </li>
+          </ol>
+        </section>
+
+        <section id="cli-tools" class="section-card">
+          <h2>بخش سوم: جعبه ابزار کارآگاه شبکه</h2>
+          <p>
+            این دستورات، ابزارهای روزمره شما برای بازجویی از شبکه و پیدا کردن
+            سرنخ هستند.
+          </p>
+
+          <h3>ping & tracert</h3>
+          <p>
+            <code>ping</code> برای تست اتصال پایه و اندازه‌گیری تاخیر (latency)
+            و <code>tracert</code> (یا <code>traceroute</code>) برای ردیابی مسیر
+            گام به گام بسته‌ها تا مقصد استفاده می‌شود.
+          </p>
+          <pre>
+C:\> tracert google.com
+
+Tracing route to google.com [142.250.185.78]
+over a maximum of 30 hops:
+
+  1    <1 ms    <1 ms    <1 ms  192.168.1.1       <-- روتر شما
+  2     8 ms     7 ms     8 ms  10.20.30.1        <-- روتر ISP شما
+  3     *        *        *     Request timed out.  <-- یک روتر در مسیر پاسخ نمی‌دهد
+  4    22 ms    21 ms    22 ms  some-router.com
+  ...
+ 12    23 ms    21 ms    21 ms  142.250.185.78    <-- مقصد
+                </pre
+          >
+          <div class="detective-note">
+            <p class="note-title">تفسیر خروجی Tracert</p>
+            <p>
+              افزایش ناگهانی و مداوم تاخیر در یک گام خاص، نشان‌دهنده وجود یک
+              گلوگاه (bottleneck) یا لینک کند در آن نقطه از مسیر است. ستاره‌ها
+              (*) نشان می‌دهند که یک روتر به پیام ICMP ما پاسخ نداده که ممکن است
+              به دلیل تنظیمات فایروال آن روتر باشد و لزوماً به معنای قطعی نیست.
+            </p>
+          </div>
+
+          <h3>ipconfig / ifconfig & arp</h3>
+          <p>
+            <code>ipconfig</code> (ویندوز) و <code>ifconfig</code> (لینوکس/مک)
+            برای مشاهده تنظیمات IP کارت شبکه و <code>arp -a</code> برای مشاهده
+            جدول نگاشت IP به MAC (ARP Cache) استفاده می‌شود.
+          </p>
+
+          <h3>netstat & nslookup</h3>
+          <p>
+            <code>netstat -an</code> تمام ارتباطات فعال شبکه و پورت‌هایی که در
+            حال "گوش دادن" هستند را نمایش می‌دهد. <code>nslookup</code> برای پرس
+            و جو از سرورهای DNS و عیب‌یابی مشکلات مربوط به ترجمه نام به IP
+            استفاده می‌شود.
+          </p>
+          <pre>
+C:\> nslookup compucom.com.sa
+Server:  UnKnown
+Address:  192.168.1.1
+
+Non-authoritative answer:
+Name:    compucom.com.sa
+Address:  185.151.28.181
+                </pre
+          >
+        </section>
+
+        <section id="hardware-tools" class="section-card">
+          <h2>ابزارهای سخت‌افزاری و نرم‌افزاری</h2>
+
+          <h3>ابزارهای کابل‌کشی</h3>
+          <ul>
+            <li>
+              <strong>تستر کابل (Cable Tester):</strong> یک ابزار ساده که اتصال
+              پین به پین کابل را بررسی می‌کند تا مطمئن شود قطعی (Open) یا اتصالی
+              (Short) وجود ندارد.
+            </li>
+            <li>
+              <strong
+                >تولیدکننده سیگنال و پراب (Tone Generator and Probe):</strong
+              >
+              برای پیدا کردن یک کابل خاص در میان انبوهی از کابل‌ها. ژنراتور به
+              یک سر کابل وصل شده و یک سیگنال صوتی تولید می‌کند؛ پراب با نزدیک
+              شدن به سر دیگر همان کابل، آن سیگنال را تشخیص داده و بوق می‌زند.
+            </li>
+          </ul>
+          <div class="img-container">
+            <img
+              src="https://placehold.co/800x300/1F2937/38bdf8?text=Cable Tester | Tone Generator & Probe"
+              alt="ابزارهای تست کابل"
+            />
+          </div>
+
+          <h3>تحلیلگر پروتکل (Protocol Analyzer)</h3>
+          <p>
+            این قدرتمندترین ابزار در جعبه ابزار شماست. یک تحلیلگر پروتکل (که به
+            آن Packet Sniffer هم می‌گویند) تمام ترافیک عبوری از یک کارت شبکه را
+            "ضبط" کرده و به شما اجازه می‌دهد تا محتوای هر پکت را به صورت دقیق و
+            لایه به لایه بررسی کنید. <strong>Wireshark</strong> معروف‌ترین و
+            پراستفاده‌ترین تحلیلگر پروتکل رایگان در جهان است.
+          </p>
+          <div class="detective-note">
+            <p class="note-title">با Wireshark چه چیزهایی می‌توان یافت؟</p>
+            <p>
+              ارتباطات رمزنگاری نشده، تلاش‌های ناموفق برای اتصال، تاخیرهای
+              غیرعادی در پاسخ‌دهی سرور، خطاهای TCP (مانند ارسال‌های مجدد یا
+              retransmissions) و هزاران مشکل دیگر که در سطح پکت قابل مشاهده
+              هستند. یادگیری Wireshark شما را از یک تکنسین شبکه به یک متخصص
+              عیب‌یابی واقعی تبدیل می‌کند.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>
+          ماموریت شما: حفظ نظم و پایداری در دنیای دیجیتال. این ابزارها و
+          تکنیک‌ها، سلاح‌های شما هستند.
+        </p>
+        <p>بر اساس مهارت‌های عملی و کاربردی فصل نهم کتاب CompTIA Network+</p>
+      </footer>
+    </div>
+  </body>
+</html>

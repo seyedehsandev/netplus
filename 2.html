@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تحلیل کامل مدل OSI - فصل دوم Network+</title>
+    <style>
+      /* --- General Styles & The "Cool" Factor --- */
+      @import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700;900&display=swap");
+
+      :root {
+        --bg-color: #121212;
+        --primary-card-bg: #1e1e1e;
+        --secondary-card-bg: #2a2a2a;
+        --text-color: #e0e0e0;
+        --primary-accent: #00bcd4; /* Cyan */
+        --secondary-accent: #ffeb3b; /* Yellow */
+        --header-font-weight: 900;
+        --border-radius: 15px;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Vazirmatn", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.8;
+        font-size: 18px;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      /* --- Header & Navigation --- */
+      header {
+        text-align: center;
+        padding: 60px 20px;
+        background: linear-gradient(
+            135deg,
+            rgba(0, 188, 212, 0.2),
+            rgba(255, 235, 59, 0.1)
+          ),
+          url("https://www.transparenttextures.com/patterns/cubes.png");
+        border-bottom: 5px solid var(--primary-accent);
+      }
+
+      header h1 {
+        font-size: 3.5rem;
+        font-weight: var(--header-font-weight);
+        color: #fff;
+        text-shadow: 0 0 15px var(--primary-accent);
+        margin-bottom: 10px;
+      }
+
+      header p {
+        font-size: 1.3rem;
+        color: var(--text-color);
+        opacity: 0.9;
+      }
+
+      nav {
+        background-color: var(--primary-card-bg);
+        padding: 15px 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: var(--shadow);
+        border-bottom: 2px solid var(--primary-accent);
+      }
+
+      nav ul {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      nav ul li a {
+        color: var(--text-color);
+        text-decoration: none;
+        font-weight: 700;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+
+      nav ul li a:hover,
+      nav ul li a.active {
+        background-color: var(--primary-accent);
+        color: var(--bg-color);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
+      }
+
+      /* --- Main Content & Sections --- */
+      main {
+        padding: 40px 0;
+      }
+
+      .section-card {
+        background-color: var(--primary-card-bg);
+        margin-bottom: 40px;
+        padding: 30px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        border-left: 5px solid var(--primary-accent);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .section-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+      }
+
+      .section-card h2 {
+        font-size: 2.5rem;
+        font-weight: var(--header-font-weight);
+        color: var(--primary-accent);
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--secondary-accent);
+      }
+
+      h3 {
+        font-size: 1.8rem;
+        color: var(--secondary-accent);
+        margin-top: 30px;
+        margin-bottom: 15px;
+      }
+
+      p,
+      li {
+        font-size: 1.1rem;
+        color: var(--text-color);
+        opacity: 0.9;
+      }
+
+      strong {
+        color: var(--secondary-accent);
+        font-weight: 700;
+      }
+
+      code {
+        background-color: var(--bg-color);
+        color: var(--primary-accent);
+        padding: 3px 6px;
+        border-radius: 5px;
+        font-family: "Courier New", Courier, monospace;
+        direction: ltr;
+      }
+
+      pre {
+        background-color: #0d0d0d;
+        color: #f0f0f0;
+        padding: 20px;
+        border-radius: 10px;
+        overflow-x: auto;
+        border: 1px solid var(--secondary-card-bg);
+        font-family: "Courier New", Courier, monospace;
+        font-size: 1rem;
+        line-height: 1.6;
+        white-space: pre;
+        direction: ltr;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+      }
+
+      .analogy-box {
+        background-color: var(--secondary-card-bg);
+        border-left: 4px solid var(--secondary-accent);
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 0 var(--border-radius) var(--border-radius) 0;
+      }
+
+      .analogy-box .analogy-title {
+        font-weight: 700;
+        color: var(--secondary-accent);
+        font-size: 1.2rem;
+      }
+
+      /* --- Layer Specific Styling --- */
+      #layer-7 .layer-header {
+        border-color: #ff7043;
+      }
+      #layer-7 h2 {
+        color: #ff7043;
+      }
+      #layer-6 .layer-header {
+        border-color: #ffee58;
+      }
+      #layer-6 h2 {
+        color: #ffee58;
+      }
+      #layer-5 .layer-header {
+        border-color: #66bb6a;
+      }
+      #layer-5 h2 {
+        color: #66bb6a;
+      }
+      #layer-4 .layer-header {
+        border-color: #29b6f6;
+      }
+      #layer-4 h2 {
+        color: #29b6f6;
+      }
+      #layer-3 .layer-header {
+        border-color: #ab47bc;
+      }
+      #layer-3 h2 {
+        color: #ab47bc;
+      }
+      #layer-2 .layer-header {
+        border-color: #ff7043;
+      }
+      #layer-2 h2 {
+        color: #ff7043;
+      }
+      #layer-1 .layer-header {
+        border-color: #78909c;
+      }
+      #layer-1 h2 {
+        color: #78909c;
+      }
+
+      .layer-card {
+        border-left-width: 10px;
+      }
+
+      .pdu {
+        font-style: italic;
+        font-size: 1.2rem;
+        color: #fff;
+        background: var(--secondary-card-bg);
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        margin-top: 10px;
+      }
+
+      /* --- Table Styling --- */
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      .comparison-table th,
+      .comparison-table td {
+        border: 1px solid var(--secondary-card-bg);
+        padding: 15px;
+        text-align: center;
+      }
+      .comparison-table th {
+        background-color: var(--primary-accent);
+        color: var(--bg-color);
+        font-size: 1.3rem;
+      }
+      .comparison-table td {
+        background-color: var(--secondary-card-bg);
+      }
+
+      /* --- Footer --- */
+      footer {
+        text-align: center;
+        padding: 30px 20px;
+        margin-top: 40px;
+        background-color: var(--primary-card-bg);
+        border-top: 3px solid var(--primary-accent);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>کالبدشکافی مدل مرجع OSI</h1>
+      <p>راهنمای جامع و تصویری فصل دوم کتاب Network+ برای متخصصان شبکه آینده</p>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="#intro">مقدمه</a></li>
+        <li><a href="#layer-7">لایه 7: کاربرد</a></li>
+        <li><a href="#layer-6">لایه 6: ارائه</a></li>
+        <li><a href="#layer-5">لایه 5: نشست</a></li>
+        <li><a href="#layer-4">لایه 4: انتقال</a></li>
+        <li><a href="#layer-3">لایه 3: شبکه</a></li>
+        <li><a href="#layer-2">لایه 2: پیوند داده</a></li>
+        <li><a href="#layer-1">لایه 1: فیزیکی</a></li>
+        <li><a href="#encapsulation">کپسوله‌سازی</a></li>
+        <li><a href="#comparison">مقایسه OSI و TCP/IP</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <main>
+        <section id="intro" class="section-card">
+          <h2>مقدمه: چرا به یک مدل مرجع نیاز داریم؟</h2>
+          <p>
+            در روزهای اولیه پیدایش شبکه‌های کامپیوتری، هر شرکت سازنده تجهیزات
+            (مانند IBM, DEC) از معماری و پروتکل‌های انحصاری خود استفاده می‌کرد.
+            این یعنی یک کامپیوتر از شرکت IBM نمی‌توانست به سادگی با یک کامپیوتر
+            از شرکت DEC ارتباط برقرار کند. این "جنگل استانداردها" یک مانع بزرگ
+            برای رشد اینترنت بود.
+          </p>
+          <p>
+            برای حل این مشکل، سازمان بین‌المللی استانداردسازی (ISO) در اواخر دهه
+            1970 مدلی به نام
+            <strong>OSI (Open Systems Interconnection)</strong> را ارائه داد.
+            هدف اصلی این مدل، ایجاد یک
+            <strong>چارچوب استاندارد و مرجع</strong> بود تا تولیدکنندگان مختلف
+            بتوانند محصولاتی بسازند که با یکدیگر "صحبت" کنند و سازگار باشند.
+          </p>
+          <p>
+            مدل OSI یک مدل <strong>مفهومی و تئوری</strong> است. این مدل به خودی
+            خود یک پروتکل یا نرم‌افزار نیست، بلکه یک نقشه راه است که وظایف
+            پیچیده شبکه را به <strong>هفت لایه مجزا و قابل مدیریت</strong> تقسیم
+            می‌کند. هر لایه وظیفه مشخصی دارد و فقط با لایه‌های بالا و پایین خود
+            در تعامل است.
+          </p>
+          <div class="analogy-box">
+            <p class="analogy-title">مثال ساده: ساخت یک خودرو</p>
+            <p>
+              تصور کنید ساخت یک خودرو به هفت مرحله تقسیم شده است: ۱-طراحی شاسی،
+              ۲-ساخت موتور، ۳-نصب سیستم انتقال قدرت، ۴-نصب چرخ‌ها، ۵-ساخت بدنه،
+              ۶-رنگ‌آمیزی، ۷-نصب تجهیزات داخلی. هر تیم متخصص وظیفه خود را انجام
+              می‌دهد بدون اینکه نیاز باشد از جزئیات کار تیم دیگر سر در بیاورد.
+              تیم موتور فقط باید بداند که موتور چگونه به شاسی و سیستم انتقال
+              قدرت متصل می‌شود. مدل OSI نیز به همین شکل عمل می‌کند.
+            </p>
+          </div>
+          <h3>دیاگرام کلی مدل OSI</h3>
+          <pre>
+    +----------------------+      +--------------------------------+
+    |   میزبان فرستنده     |      |        میزبان گیرنده           |
+    +----------------------+      +--------------------------------+
+    |  7. لایه کاربرد      | <--> |       7. لایه کاربرد           |  (پروتکل‌های HTTP, FTP)
+    +----------------------+      +--------------------------------+
+    |  6. لایه ارائه       | <--> |       6. لایه ارائه            |  (رمزنگاری، فشرده‌سازی)
+    +----------------------+      +--------------------------------+
+    |  5. لایه نشست        | <--> |       5. لایه نشست             |  (ایجاد و مدیریت جلسه)
+    +----------------------+      +--------------------------------+
+    |  4. لایه انتقال      | <--> |       4. لایه انتقال           |  (TCP, UDP)
+    +----------------------+      +--------------------------------+
+    |  3. لایه شبکه        | <--> |       3. لایه شبکه             |  (آدرس‌دهی IP، مسیریابی)
+    +----------------------+      +--------------------------------+
+    |  2. لایه پیوند داده  | <--> |       2. لایه پیوند داده       |  (آدرس‌دهی MAC، فریم‌بندی)
+    +----------------------+      +--------------------------------+
+    |  1. لایه فیزیکی      | <--> |       1. لایه فیزیکی            |  (کابل، سیگنال الکتریکی)
+    +----------------------+      +--------------------------------+
+                </pre
+          >
+        </section>
+
+        <!-- Layer 7: Application -->
+        <section id="layer-7" class="section-card layer-card">
+          <div class="layer-header">
+            <h2>لایه 7: لایه کاربرد (Application Layer)</h2>
+          </div>
+          <h3>وظیفه اصلی: رابط بین کاربر و شبکه</h3>
+          <p>
+            این لایه نزدیک‌ترین لایه به کاربر نهایی است. وظیفه آن فراهم کردن
+            سرویس‌های شبکه برای نرم‌افزارهایی است که ما روزانه از آنها استفاده
+            می‌کنیم. این لایه خودِ نرم‌افزار (مثلاً مرورگر کروم یا Outlook)
+            نیست، بلکه شامل پروتکل‌هایی است که این نرم‌افزارها برای ارتباط با
+            شبکه از آنها استفاده می‌کنند.
+          </p>
+          <h3>پروتکل‌های کلیدی:</h3>
+          <ul>
+            <li>
+              <strong>HTTP/HTTPS:</strong> برای وب‌گردی و مشاهده صفحات وب.
+            </li>
+            <li>
+              <strong>FTP (File Transfer Protocol):</strong> برای انتقال فایل
+              بین کامپیوترها.
+            </li>
+            <li>
+              <strong>SMTP (Simple Mail Transfer Protocol):</strong> برای ارسال
+              ایمیل.
+            </li>
+            <li><strong>POP3/IMAP:</strong> برای دریافت ایمیل.</li>
+            <li>
+              <strong>DNS (Domain Name System):</strong> برای تبدیل نام دامنه
+              (مثل google.com) به آدرس IP.
+            </li>
+          </ul>
+          <div class="analogy-box">
+            <p class="analogy-title">مثال اداره پست:</p>
+            <p>
+              شما (کاربر) تصمیم می‌گیرید یک نامه (داده) بفرستید. شما به باجه پست
+              می‌روید و نوع سرویس را انتخاب می‌کنید: پست سفارشی، پیشتاز یا عادی.
+              لایه کاربرد مانند همین باجه است که به شما سرویس‌های مختلف (HTTP,
+              FTP, ...) را ارائه می‌دهد.
+            </p>
+          </div>
+          <p class="pdu">واحد داده (PDU): داده (Data)</p>
+        </section>
+
+        <!-- Layer 6: Presentation -->
+        <section id="layer-6" class="section-card layer-card">
+          <div class="layer-header">
+            <h2>لایه 6: لایه ارائه (Presentation Layer)</h2>
+          </div>
+          <h3>وظیفه اصلی: ترجمه، فشرده‌سازی و رمزنگاری</h3>
+          <p>
+            این لایه مانند یک "مترجم جهانی" برای شبکه عمل می‌کند. وظیفه آن این
+            است که اطمینان حاصل کند داده‌ها در فرمتی ارسال می‌شوند که کامپیوتر
+            مقصد قادر به درک آن باشد. کامپیوترهای مختلف ممکن است از سیستم‌های
+            کدگذاری کاراکتر متفاوتی استفاده کنند (مثلاً ASCII یا EBCDIC). این
+            لایه مسئول تبدیل داده‌ها به یک فرمت استاندارد و مشترک است.
+          </p>
+          <h3>وظایف کلیدی:</h3>
+          <ul>
+            <li>
+              <strong>ترجمه (Translation):</strong> تبدیل فرمت داده‌ها به یک
+              استاندارد مشترک (مثل تبدیل ASCII به Unicode).
+            </li>
+            <li>
+              <strong>فشرده‌سازی (Compression):</strong> کاهش حجم داده‌ها برای
+              ارسال سریع‌تر (مثل فرمت‌های JPEG, MPEG, ZIP).
+            </li>
+            <li>
+              <strong>رمزنگاری (Encryption):</strong> ایمن‌سازی داده‌ها قبل از
+              ارسال در شبکه از طریق الگوریتم‌های رمزنگاری (مثل SSL/TLS).
+            </li>
+          </ul>
+          <div class="analogy-box">
+            <p class="analogy-title">مثال اداره پست:</p>
+            <p>
+              فرض کنید نامه شما به زبانی نوشته شده که گیرنده آن را نمی‌فهمد.
+              کارمند باجه (لایه ارائه) نامه شما را به زبان مقصد ترجمه می‌کند.
+              اگر نامه محرمانه باشد، آن را با یک کد مخصوص رمزگذاری می‌کند و برای
+              صرفه‌جویی، آن را در یک پاکت کوچک‌تر فشرده می‌کند.
+            </p>
+          </div>
+          <p class="pdu">واحد داده (PDU): داده (Data)</p>
+        </section>
+
+        <!-- Layer 5: Session -->
+        <section id="layer-5" class="section-card layer-card">
+          <div class="layer-header">
+            <h2>لایه 5: لایه نشست (Session Layer)</h2>
+          </div>
+          <h3>وظیفه اصلی: مدیریت گفتگوها (Sessions)</h3>
+          <p>
+            این لایه مسئول ایجاد، مدیریت و خاتمه دادن به "نشست‌ها" یا "گفتگوها"
+            بین دو کامپیوتر است. یک نشست، یک ارتباط مداوم و دوطرفه است. برای
+            مثال، وقتی شما وارد حساب بانکی آنلاین خود می‌شوید، یک نشست ایجاد
+            می‌شود که تا زمان خروج شما (یا تمام شدن زمان مجاز) فعال باقی
+            می‌ماند.
+          </p>
+          <h3>وظایف کلیدی:</h3>
+          <ul>
+            <li>
+              <strong
+                >ایجاد و خاتمه نشست (Session Establishment/Termination):</strong
+              >
+              شروع و پایان دادن به ارتباط.
+            </li>
+            <li>
+              <strong>همگام‌سازی (Synchronization):</strong> این لایه می‌تواند
+              نقاطی به نام "چک‌پوینت" (Checkpoint) در جریان داده ایجاد کند. اگر
+              در حین انتقال یک فایل بزرگ ارتباط قطع شود، به لطف این چک‌پوینت‌ها،
+              انتقال از آخرین چک‌پوینت ادامه پیدا می‌کند و نیازی به شروع از اول
+              نیست.
+            </li>
+            <li>
+              <strong>کنترل گفتگو (Dialog Control):</strong> تعیین اینکه چه کسی،
+              چه زمانی و برای چه مدتی می‌تواند داده ارسال کند (یک‌طرفه، دوطرفه
+              همزمان یا دوطرفه نوبتی).
+            </li>
+          </ul>
+          <div class="analogy-box">
+            <p class="analogy-title">مثال اداره پست:</p>
+            <p>
+              این لایه مانند یک اپراتور تلفن است که تماس بین شما و گیرنده را
+              برقرار می‌کند. او مطمئن می‌شود که خط ارتباطی باز است، مکالمه را
+              مدیریت می‌کند (مثلاً نوبت صحبت را مشخص می‌کند) و وقتی کارتان تمام
+              شد، تماس را قطع می‌کند.
+            </p>
+          </div>
+          <p class="pdu">واحد داده (PDU): داده (Data)</p>
+        </section>
+
+        <!-- Layer 4: Transport -->
+        <section id="layer-4" class="section-card layer-card">
+          <div class="layer-header">
+            <h2>لایه 4: لایه انتقال (Transport Layer)</h2>
+          </div>
+          <h3>وظیفه اصلی: تحویل مطمئن و سرتاسری داده‌ها</h3>
+          <p>
+            این لایه قلب ارتباطات شبکه است. وظیفه آن تحویل داده‌ها از یک
+            "پردازش" در کامپیوتر مبدأ به "پردازش" متناظر در کامپیوتر مقصد است.
+            این لایه دو پروتکل بسیار مهم را ارائه می‌دهد:
+          </p>
+          <ul>
+            <li>
+              <strong>TCP (Transmission Control Protocol):</strong> یک پروتکل
+              <strong>اتصال‌گرا (Connection-Oriented)</strong> و
+              <strong>قابل اعتماد (Reliable)</strong> است. قبل از ارسال داده، یک
+              ارتباط سه‌مرحله‌ای (Three-way Handshake) برقرار می‌کند. TCP تضمین
+              می‌کند که تمام داده‌ها به ترتیب و بدون خطا به مقصد برسند. اگر
+              بسته‌ای گم شود، دوباره آن را ارسال می‌کند. مناسب برای وب‌گردی،
+              ایمیل و انتقال فایل.
+            </li>
+            <li>
+              <strong>UDP (User Datagram Protocol):</strong> یک پروتکل
+              <strong>بدون اتصال (Connectionless)</strong> و
+              <strong>غیرقابل اعتماد (Unreliable)</strong> است. هیچ تضمینی برای
+              رسیدن داده‌ها نمی‌دهد. اما به همین دلیل بسیار سریع‌تر از TCP است.
+              مناسب برای استریم ویدئو، بازی‌های آنلاین و تماس‌های صوتی/تصویری که
+              در آنها سرعت مهم‌تر از دقت کامل است.
+            </li>
+          </ul>
+          <h3>وظایف کلیدی دیگر:</h3>
+          <ul>
+            <li>
+              <strong>بخش‌بندی و بازسازی (Segmentation & Reassembly):</strong>
+              داده‌های بزرگ را به قطعات کوچک‌تری به نام
+              <strong>Segment</strong> تقسیم کرده و در مقصد آنها را دوباره به هم
+              می‌چسباند.
+            </li>
+            <li>
+              <strong>آدرس‌دهی پورت (Port Addressing):</strong> با استفاده از
+              شماره پورت، مشخص می‌کند که داده باید به کدام نرم‌افزار یا سرویس در
+              کامپیوتر مقصد تحویل داده شود (مثلاً پورت 80 برای HTTP، پورت 443
+              برای HTTPS).
+            </li>
+            <li>
+              <strong>کنترل جریان (Flow Control):</strong> مدیریت سرعت ارسال
+              داده برای جلوگیری از سرریز شدن بافر کامپیوتر گیرنده.
+            </li>
+          </ul>
+          <div class="analogy-box">
+            <p class="analogy-title">مثال اداره پست:</p>
+            <p>
+              این لایه مسئول اتاق بایگانی و ارسال در اداره پست است. اگر شما یک
+              کتاب قطور (داده بزرگ) را برای ارسال داشته باشید، کارمند این بخش
+              (لایه انتقال) آن را به چند بخش کوچک‌تر (Segment) تقسیم کرده و
+              هرکدام را در یک پاکت جداگانه شماره‌گذاری می‌کند. او تصمیم می‌گیرد
+              که این بسته‌ها با پست سفارشی و قابل رهگیری (TCP) ارسال شوند یا با
+              پست عادی و سریع (UDP). در پاکت، او همچنین شماره آپارتمان گیرنده
+              (شماره پورت) را نیز قید می‌کند.
+            </p>
+          </div>
+          <p class="pdu">واحد داده (PDU): سگمنت (Segment)</p>
+        </section>
+
+        <!-- Layer 3: Network -->
+        <section id="layer-3" class="section-card layer-card">
+          <div class="layer-header">
+            <h2>لایه 3: لایه شبکه (Network Layer)</h2>
+          </div>
+          <h3>وظیفه اصلی: مسیریابی و آدرس‌دهی منطقی</h3>
+          <p>
+            وظیفه این لایه، تحویل بسته‌ها از کامپیوتر مبدأ به کامپیوتر مقصد
+            <strong>در شبکه‌های مختلف</strong> است. این لایه بهترین مسیر (Route)
+            را برای رسیدن داده‌ها به مقصد پیدا می‌کند. مهم‌ترین مفهوم در این
+            لایه، آدرس‌دهی منطقی یا <strong>IP Address</strong> است.
+          </p>
+          <h3>وظایف و مفاهیم کلیدی:</h3>
+          <ul>
+            <li>
+              <strong>آدرس‌دهی منطقی (Logical Addressing):</strong> به هر دستگاه
+              در شبکه یک آدرس IP منحصربه‌فرد اختصاص می‌دهد تا در کل اینترنت قابل
+              شناسایی باشد.
+            </li>
+            <li>
+              <strong>مسیریابی (Routing):</strong> روترها (Routers) که در این
+              لایه کار می‌کنند، جداول مسیریابی دارند و با بررسی آدرس IP مقصد هر
+              بسته، تصمیم می‌گیرند که آن را به کدام مسیر یا شبکه بعدی ارسال کنند
+              تا به مقصد نهایی برسد.
+            </li>
+            <li>
+              <strong>بسته‌بندی (Packaging):</strong> سگمنت‌های دریافتی از لایه
+              انتقال را در بسته‌هایی به نام <strong>Packet</strong> قرار می‌دهد
+              و هدر IP (شامل آدرس IP مبدأ و مقصد) را به آن اضافه می‌کند.
+            </li>
+          </ul>
+          <div class="analogy-box">
+            <p class="analogy-title">مثال اداره پست:</p>
+            <p>
+              این لایه، مرکز توزیع و مسیریابی کل کشور است. وقتی بسته‌های شما
+              (Packets) به این مرکز می‌رسند، کارمندان به آدرس شهر و خیابان
+              گیرنده (IP Address) نگاه می‌کنند و تصمیم می‌گیرند که بسته را با
+              کامیون، قطار یا هواپیما (بهترین مسیر) به شهر مقصد بفرستند. آن‌ها
+              به نام شخص یا شماره آپارتمان کاری ندارند، فقط به آدرس کلی نگاه
+              می‌کنند.
+            </p>
+          </div>
+          <p class="pdu">واحد داده (PDU): بسته (Packet)</p>
+        </section>
+
+        <!-- Layer 2: Data Link -->
+        <section id="layer-2" class="section-card layer-card">
+          <div class="layer-header">
+            <h2>لایه 2: لایه پیوند داده (Data Link Layer)</h2>
+          </div>
+          <h3>وظیفه اصلی: تحویل قابل اعتماد در شبکه محلی (LAN)</h3>
+          <p>
+            اگر لایه شبکه مسئول ارسال بسته بین شهرهای مختلف است، لایه پیوند داده
+            مسئول تحویل آن بسته از مرکز پست شهر به درب منزل فرد مورد نظر است.
+            این لایه ارتباط بین دو دستگاه که <strong>به طور مستقیم</strong> به
+            هم متصل هستند (در یک شبکه محلی یا LAN) را مدیریت می‌کند. این کار از
+            طریق آدرس فیزیکی یا <strong>MAC Address</strong> انجام می‌شود.
+          </p>
+          <h3>وظایف و مفاهیم کلیدی:</h3>
+          <ul>
+            <li>
+              <strong>آدرس‌دهی فیزیکی (Physical Addressing):</strong> به هر کارت
+              شبکه (NIC) در جهان یک آدرس منحصربه‌فرد به نام MAC Address اختصاص
+              داده شده است. سوئیچ‌ها (Switches) که در این لایه کار می‌کنند، از
+              این آدرس برای ارسال داده به دستگاه صحیح در شبکه محلی استفاده
+              می‌کنند.
+            </li>
+            <li>
+              <strong>فریم‌بندی (Framing):</strong> بسته‌های دریافتی از لایه
+              شبکه را در واحدهایی به نام <strong>Frame</strong> قرار می‌دهد. به
+              ابتدا و انتهای بسته، هدر و فوتر (Trailer) اضافه می‌کند که حاوی
+              اطلاعاتی مانند آدرس MAC مبدأ و مقصد و کد تشخیص خطا است.
+            </li>
+            <li>
+              <strong>کنترل خطا (Error Control):</strong> با استفاده از
+              الگوریتم‌هایی مانند CRC (Cyclic Redundancy Check) که در فوتر فریم
+              قرار می‌گیرد، تشخیص می‌دهد که آیا فریم در حین انتقال آسیب دیده است
+              یا خیر.
+            </li>
+            <li>
+              <strong
+                >کنترل دسترسی به رسانه (Media Access Control - MAC):</strong
+              >
+              مشخص می‌کند کدام دستگاه در یک رسانه اشتراکی (مثل Wi-Fi) در هر لحظه
+              اجازه ارسال داده را دارد تا از تداخل (Collision) جلوگیری شود.
+            </li>
+          </ul>
+          <div class="analogy-box">
+            <p class="analogy-title">مثال اداره پست:</p>
+            <p>
+              این لایه، پستچی محله شماست. او بسته‌هایی که برای محله شما آمده را
+              تحویل می‌گیرد. او به آدرس شهر نگاه نمی‌کند (کار لایه 3 بود)، بلکه
+              به نام خیابان و شماره پلاک (MAC Address) نگاه می‌کند و بسته را
+              دقیقاً به درب منزل شما می‌رساند. او همچنین مطمئن می‌شود که بسته
+              سالم به دست شما رسیده است (کنترل خطا).
+            </p>
+          </div>
+          <p class="pdu">واحد داده (PDU): فریم (Frame)</p>
+        </section>
+
+        <!-- Layer 1: Physical -->
+        <section id="layer-1" class="section-card layer-card">
+          <div class="layer-header">
+            <h2>لایه 1: لایه فیزیکی (Physical Layer)</h2>
+          </div>
+          <h3>وظیفه اصلی: انتقال بیت‌ها بر روی رسانه فیزیکی</h3>
+          <p>
+            این لایه با دنیای فیزیکی سروکار دارد. وظیفه آن ارسال و دریافت
+            بیت‌های خام (صفرها و یک‌ها) از طریق یک رسانه فیزیکی است. این لایه
+            هیچ درکی از معنای بیت‌ها (اینکه فریم هستند یا پکت) ندارد و فقط آنها
+            را به صورت سیگنال‌های الکتریکی، نوری یا رادیویی منتقل می‌کند.
+          </p>
+          <h3>مفاهیم و تجهیزات کلیدی:</h3>
+          <ul>
+            <li>
+              <strong>رسانه انتقال:</strong> کابل‌های مسی (مثل کابل شبکه Cat6)،
+              کابل فیبر نوری، امواج رادیویی (Wi-Fi, Bluetooth).
+            </li>
+            <li>
+              <strong>نوع سیگنال‌دهی:</strong> ولتاژ الکتریکی، فرکانس رادیویی،
+              پالس‌های نوری.
+            </li>
+            <li>
+              <strong>توپولوژی شبکه:</strong> نحوه اتصال فیزیکی دستگاه‌ها به
+              یکدیگر (مثلاً Star, Mesh).
+            </li>
+            <li>
+              <strong>تجهیزات:</strong> هاب (Hub)، تکرارکننده (Repeater)،
+              کابل‌ها و کانکتورها (مثل RJ-45).
+            </li>
+          </ul>
+          <div class="analogy-box">
+            <p class="analogy-title">مثال اداره پست:</p>
+            <p>
+              این لایه خودِ کامیون، جاده، هواپیما، کاغذ نامه و جوهر است. یعنی
+              تمام زیرساخت فیزیکی که برای جابجایی نامه استفاده می‌شود. این لایه
+              فقط "حمل" می‌کند و کاری به محتوا، آدرس یا نوع بسته ندارد.
+            </p>
+          </div>
+          <p class="pdu">واحد داده (PDU): بیت (Bit)</p>
+        </section>
+
+        <!-- Encapsulation Section -->
+        <section id="encapsulation" class="section-card">
+          <h2>فرآیند جادویی: کپسوله‌سازی (Encapsulation)</h2>
+          <p>
+            کپسوله‌سازی فرآیندی است که در آن داده‌ها هنگام حرکت از لایه‌های
+            بالای مدل OSI به سمت لایه‌های پایین، در هر لایه بسته‌بندی می‌شوند.
+            در هر لایه، اطلاعات کنترلی مخصوص آن لایه (به نام هدر) به داده‌ها
+            اضافه می‌شود. این فرآیند مانند قرار دادن یک نامه در پاکت، و سپس قرار
+            دادن آن پاکت در یک جعبه بزرگ‌تر است.
+          </p>
+          <h3>مراحل کپسوله‌سازی (از بالا به پایین):</h3>
+          <ol>
+            <li>
+              <strong>کاربر داده را ایجاد می‌کند:</strong> شما یک ایمیل
+              می‌نویسید. (لایه های 7, 6, 5)
+            </li>
+            <li>
+              <strong>لایه 4 (انتقال):</strong> داده به سگمنت‌ها تقسیم شده و هدر
+              TCP (شامل شماره پورت) به آن اضافه می‌شود.
+            </li>
+            <li>
+              <strong>لایه 3 (شبکه):</strong> سگمنت در یک پکت قرار گرفته و هدر
+              IP (شامل آدرس IP مبدأ و مقصد) به آن اضافه می‌شود.
+            </li>
+            <li>
+              <strong>لایه 2 (پیوند داده):</strong> پکت در یک فریم قرار گرفته و
+              هدر و فوتر (شامل آدرس MAC) به آن اضافه می‌شود.
+            </li>
+            <li>
+              <strong>لایه 1 (فیزیکی):</strong> فریم به بیت‌ها تبدیل شده و به
+              صورت سیگنال روی کابل ارسال می‌شود.
+            </li>
+          </ol>
+          <h3>دیاگرام فرآیند کپسوله‌سازی</h3>
+          <pre>
++-----------------------------------------------------------------------+
+| 7. کاربرد      |                                                       |
+| 6. ارائه       |                      [ داده ]                          |
+| 5. نشست        |                                                       |
++-----------------------------------------------------------------------+
+      |
+      v
++-----------------------------------------------------------------------+
+| 4. انتقال      |  [ هدر TCP |           داده             ] (سگمنت)     |
++-----------------------------------------------------------------------+
+      |
+      v
++-----------------------------------------------------------------------+
+| 3. شبکه        |  [ هدر IP | هدر TCP |      داده        ] (پکت)        |
++-----------------------------------------------------------------------+
+      |
+      v
++-----------------------------------------------------------------------+
+| 2. پیوند داده  | [هدرL2 | هدر IP | هدر TCP | داده | فوترL2] (فریم)      |
++-----------------------------------------------------------------------+
+      |
+      v
++-----------------------------------------------------------------------+
+| 1. فیزیکی      | 01011010100010101110101... (بیت‌ها روی کابل)          |
++-----------------------------------------------------------------------+
+                </pre
+          >
+          <p>
+            در کامپیوتر مقصد، فرآیند معکوسی به نام
+            <strong>واکشی (De-encapsulation)</strong> رخ می‌دهد. هر لایه، هدر
+            مربوط به خود را می‌خواند، پردازش می‌کند و آن را حذف می‌کند و
+            باقیمانده داده را به لایه بالاتر خود تحویل می‌دهد تا در نهایت داده
+            خالص به نرم‌افزار کاربر برسد.
+          </p>
+        </section>
+
+        <!-- Comparison Section -->
+        <section id="comparison" class="section-card">
+          <h2>مقایسه مدل OSI و مدل TCP/IP</h2>
+          <p>
+            درحالی که مدل OSI یک مدل مرجع و تئوری عالی است، مدلی که در عمل در
+            اینترنت امروزی استفاده می‌شود، مدل <strong>TCP/IP</strong> است. این
+            مدل ساده‌تر بوده و دارای چهار لایه است. درک ارتباط بین این دو مدل
+            بسیار مهم است.
+          </p>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>لایه مدل OSI</th>
+                <th>لایه مدل TCP/IP</th>
+                <th>مثال پروتکل‌ها</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>7. کاربرد (Application)</td>
+                <td
+                  rowspan="3"
+                  style="vertical-align: middle; background-color: #333"
+                >
+                  4. کاربرد (Application)
+                </td>
+                <td rowspan="3" style="vertical-align: middle">
+                  HTTP, FTP, SMTP, DNS
+                </td>
+              </tr>
+              <tr>
+                <td>6. ارائه (Presentation)</td>
+              </tr>
+              <tr>
+                <td>5. نشست (Session)</td>
+              </tr>
+              <tr>
+                <td>4. انتقال (Transport)</td>
+                <td>3. انتقال (Transport)</td>
+                <td>TCP, UDP</td>
+              </tr>
+              <tr>
+                <td>3. شبکه (Network)</td>
+                <td>2. اینترنت (Internet)</td>
+                <td>IP, ICMP, ARP</td>
+              </tr>
+              <tr>
+                <td>2. پیوند داده (Data Link)</td>
+                <td
+                  rowspan="2"
+                  style="vertical-align: middle; background-color: #333"
+                >
+                  1. دسترسی به شبکه (Network Access)
+                </td>
+                <td rowspan="2" style="vertical-align: middle">
+                  Ethernet, Wi-Fi, MAC Address
+                </td>
+              </tr>
+              <tr>
+                <td>1. فیزیکی (Physical)</td>
+              </tr>
+            </tbody>
+          </table>
+          <h3>تفاوت‌های کلیدی:</h3>
+          <ul>
+            <li>
+              OSI یک مدل <strong>تئوری</strong> است که برای آموزش و عیب‌یابی
+              فوق‌العاده است، اما TCP/IP یک مدل <strong>عملی</strong> است که
+              اینترنت بر پایه آن ساخته شده.
+            </li>
+            <li>
+              OSI هفت لایه دارد، درحالی که TCP/IP چهار لایه دارد (و گاهی به صورت
+              پنج لایه تفسیر می‌شود).
+            </li>
+            <li>
+              در مدل OSI، لایه‌ها و وظایف به شدت از هم تفکیک شده‌اند، درحالی که
+              در TCP/IP این مرزها کمی انعطاف‌پذیرتر هستند.
+            </li>
+          </ul>
+        </section>
+      </main>
+
+      <footer>
+        <p>طراحی و تهیه شده با خلاقیت و عشق به دنیای شبکه.</p>
+        <p>بر اساس مفاهیم فصل دوم کتاب CompTIA Network+</p>
+      </footer>
+    </div>
+  </body>
+</html>

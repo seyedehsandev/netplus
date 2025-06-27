@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دنیای نامرئی Wi-Fi: شبکه بی‌سیم - فصل هشتم Network+</title>
+    <style>
+        /* --- General Styles & "Wireless Waves / Tech" Theme --- */
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-color: #121221;
+            --primary-card-bg: rgba(29, 43, 83, 0.7);
+            --secondary-card-bg: rgba(62, 56, 117, 0.7);
+            --text-color: #c0c0e0;
+            --primary-accent: #00f5d4; /* Vibrant Teal/Cyan */
+            --secondary-accent: #ab47bc; /* Purple */
+            --header-font-family: 'Exo 2', 'Vazirmatn', sans-serif;
+            --header-font-weight: 900;
+            --border-radius: 15px;
+            --shadow: 0 0 20px rgba(0, 245, 212, 0.25);
+            --font-code: 'Fira Code', 'Courier New', monospace;
+            --golden-tip-bg: rgba(255, 215, 0, 0.1);
+            --golden-tip-border: #ffd700;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 2.0;
+            font-size: 18px;
+            background-image: 
+                radial-gradient(var(--secondary-accent) 1px, transparent 1px),
+                radial-gradient(var(--primary-accent) 1px, var(--bg-color) 1px);
+            background-size: 80px 80px, 80px 80px;
+            background-position: 0 0, 40px 40px;
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- Header & Navigation --- */
+        header {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(180deg, rgba(18,18,33,0), var(--bg-color) 90%);
+        }
+
+        header h1 {
+            font-family: var(--header-font-family);
+            font-size: 4rem;
+            color: var(--primary-accent);
+            text-shadow: 0 0 10px var(--primary-accent);
+            margin-bottom: 20px;
+        }
+
+        header p {
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+
+        nav {
+            background-color: rgba(18, 18, 33, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            border-bottom: 1px solid var(--primary-accent);
+        }
+
+        nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; }
+        nav ul li a {
+            color: var(--primary-accent);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 10px 25px;
+            border: 1px solid var(--primary-accent);
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+        nav ul li a:hover, nav ul li a.active {
+            background-color: var(--primary-accent);
+            color: var(--bg-color);
+            box-shadow: var(--shadow);
+        }
+        
+        /* --- Main Content & Sections --- */
+        .section-card {
+            background-color: var(--primary-card-bg);
+            backdrop-filter: blur(8px);
+            margin-bottom: 50px;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(0, 245, 212, 0.3);
+            box-shadow: var(--shadow);
+        }
+        
+        .section-card h2 {
+            font-family: var(--header-font-family);
+            font-size: 3rem;
+            color: var(--primary-accent);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--secondary-accent);
+        }
+
+        h3 { font-size: 2.2rem; color: var(--secondary-accent); margin: 35px 0 20px 0; }
+        p, li { font-size: 1.15rem; }
+        strong { font-weight: bold; color: var(--primary-accent); }
+
+        pre { background: rgba(0,0,0,0.5); color: #f0f0f0; padding: 25px; border-radius: var(--border-radius); border: 1px solid var(--secondary-accent); font-family: var(--font-code), monospace; direction: ltr; margin: 20px 0; }
+        
+        /* --- Image Styling --- */
+        .img-container { margin: 30px 0; text-align: center; }
+        .img-container img { max-width: 100%; height: auto; border-radius: var(--border-radius); background-color: var(--secondary-card-bg); padding: 5px; }
+        .img-caption { font-size: 0.9rem; color: #999; margin-top: 10px; }
+        
+        /* --- Golden Tip Styling --- */
+        .golden-tip {
+            background-color: var(--golden-tip-bg);
+            border: 1px solid var(--golden-tip-border);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: var(--border-radius);
+        }
+        .golden-tip .tip-title { font-weight: 900; color: var(--golden-tip-border); font-size: 1.4rem; margin-bottom: 10px; }
+        .golden-tip .tip-title::before { content: '💡 نکته طلایی: '; }
+        
+        /* --- Table Styling --- */
+        .custom-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
+        .custom-table th, .custom-table td { border: 1px solid var(--secondary-accent); padding: 15px; text-align: center; }
+        .custom-table th { background-color: var(--secondary-accent); color: var(--bg-color); font-size: 1.2rem; }
+        .custom-table tr:nth-child(even) td { background-color: var(--secondary-card-bg); }
+
+        /* --- Footer --- */
+        footer { text-align: center; padding: 40px 20px; margin-top: 40px; border-top: 1px solid var(--primary-accent); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>[ Decoding The Airwaves ]</h1>
+        <p>فصل هشتم: اصول و مبانی شبکه‌های بی‌سیم (Wireless)</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#intro">مبانی Wi-Fi</a></li>
+            <li><a href="#standards">استانداردهای 802.11</a></li>
+            <li><a href="#components">تجهیزات بی‌سیم</a></li>
+            <li><a href="#security">امنیت بی‌سیم</a></li>
+            <li><a href="#deployment">پیاده‌سازی شبکه</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <main>
+            <section id="intro" class="section-card">
+                <h2>مبانی Wi-Fi: صحبت در هوا</h2>
+                <p>
+                    شبکه‌های بی‌سیم، که عموماً آن‌ها را با نام <strong>Wi-Fi</strong> می‌شناسیم، از <strong>امواج رادیویی (Radio Waves)</strong> برای انتقال داده‌ها به جای کابل استفاده می‌کنند. این امواج، بخشی از طیف الکترومغناطیسی هستند و با فرکانس‌های خاصی کار می‌کنند.
+                </p>
+                <ul>
+                    <li><strong>فرکانس (Frequency):</strong> تعداد نوسانات موج در ثانیه، که با واحد هرتز (Hz) اندازه‌گیری می‌شود. فرکانس‌های بالاتر، قابلیت حمل داده بیشتری دارند اما بُرد آن‌ها کمتر است و به راحتی توسط موانع (مثل دیوار) جذب می‌شوند.</li>
+                    <li><strong>کانال (Channel):</strong> هر باند فرکانسی به بازه‌های کوچک‌تری به نام "کانال" تقسیم می‌شود تا دستگاه‌های مختلف بتوانند بدون تداخل با یکدیگر کار کنند.</li>
+                </ul>
+                 <p>دو باند فرکانسی اصلی در Wi-Fi استفاده می‌شوند:</p>
+                 <ul>
+                    <li><strong>2.4 گیگاهرتز (GHz):</strong> بُرد بیشتر، نفوذ بهتر در موانع، اما سرعت کمتر و تداخل بیشتر (چون دستگاه‌های دیگری مانند تلفن‌های بی‌سیم و مایکروویو نیز از این باند استفاده می‌کنند).</li>
+                    <li><strong>5 گیگاهرتز (GHz):</strong> سرعت بسیار بیشتر، کانال‌های فراوان و تداخل کمتر، اما بُرد کوتاه‌تر و نفوذ ضعیف‌تر در موانع.</li>
+                 </ul>
+                 <div class="img-container">
+                    <img src="https://placehold.co/800x350/1d2b53/00f5d4?text=2.4 GHz (Long Range, Low Speed) vs 5 GHz (Short Range, High Speed)" alt="مقایسه باندهای فرکانسی 2.4 و 5 گیگاهرتز">
+                    <p class="img-caption">رابطه معکوس بین فرکانس و بُرد سیگنال.</p>
+                </div>
+            </section>
+            
+            <section id="standards" class="section-card">
+                <h2>استانداردهای 802.11: تکامل سرعت و هوشمندی</h2>
+                <p>
+                    موسسه مهندسان برق و الکترونیک (IEEE) مجموعه‌ای از استانداردها را تحت عنوان خانواده <strong>802.11</strong> برای شبکه‌های بی‌سیم تعریف کرده است. هر استاندارد جدید، بهبودهایی در سرعت، بُرد، و کارایی به ارمغان می‌آورد.
+                </p>
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>استاندارد</th>
+                            <th>نام بازاری</th>
+                            <th>فرکانس (GHz)</th>
+                            <th>حداکثر سرعت تئوری</th>
+                            <th>ویژگی کلیدی</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>802.11b</td><td>-</td><td>2.4</td><td>11 Mbps</td><td>اولین استاندارد فراگیر</td></tr>
+                        <tr><td>802.11a</td><td>-</td><td>5</td><td>54 Mbps</td><td>سریع‌تر اما ناسازگار با b</td></tr>
+                        <tr><td>802.11g</td><td>-</td><td>2.4</td><td>54 Mbps</td><td>ترکیب سرعت a و سازگاری b</td></tr>
+                        <tr><td><strong>802.11n</strong></td><td><strong>Wi-Fi 4</strong></td><td>2.4 / 5</td><td>600 Mbps</td><td>معرفی MIMO</td></tr>
+                        <tr><td><strong>802.11ac</strong></td><td><strong>Wi-Fi 5</strong></td><td>5</td><td>~6.9 Gbps</td><td>استفاده گسترده از 5GHz و MU-MIMO</td></tr>
+                        <tr><td><strong>802.11ax</strong></td><td><strong>Wi-Fi 6 / 6E</strong></td><td>2.4 / 5 / 6</td><td>~9.6 Gbps</td><td>معرفی OFDMA برای کارایی بالا در محیط‌های شلوغ</td></tr>
+                        <tr><td><strong>802.11be</strong></td><td><strong>Wi-Fi 7</strong></td><td>2.4 / 5 / 6</td><td>~46 Gbps</td><td>استفاده همزمان از چند باند (MLO)</td></tr>
+                    </tbody>
+                </table>
+                 <h3>تکنولوژی‌های کلیدی:</h3>
+                 <ul>
+                    <li><strong>MIMO (Multiple-Input, Multiple-Output):</strong> استفاده از چند آنتن برای ارسال و دریافت همزمان چند جریان داده، که سرعت را به طور چشمگیری افزایش می‌دهد.</li>
+                    <li><strong>MU-MIMO (Multi-User MIMO):</strong> نسخه پیشرفته‌تر MIMO که به یک اکسس پوینت اجازه می‌دهد تا به طور همزمان با چندین دستگاه ارتباط برقرار کند (در 802.11ac فقط برای دانلود و در 802.11ax برای آپلود و دانلود).</li>
+                    <li><strong>OFDMA (Orthogonal Frequency-Division Multiple Access):</strong> این فناوری که در Wi-Fi 6 معرفی شد، به یک اکسس پوینت اجازه می‌دهد تا یک کانال را به واحدهای منابع (RUs) کوچک‌تر تقسیم کرده و به طور همزمان به چندین کاربر با نیازهای داده‌ای کم سرویس دهد. این کار مانند یک کامیون است که به جای رفتن به یک مقصد، محموله‌های کوچک را همزمان به چندین مقصد مختلف تحویل می‌دهد و کارایی را در محیط‌های پرازدحام به شدت بالا می‌برد.</li>
+                 </ul>
+                 <div class="golden-tip">
+                    <p class="tip-title">چرا اسم‌ها تغییر کردند؟ (Wi-Fi 4, 5, 6)</p>
+                    <p>
+                        به خاطر سپردن حروف (n, ac, ax) برای مصرف‌کنندگان گیج‌کننده بود. به همین دلیل، سازمان <strong>Wi-Fi Alliance</strong> یک سیستم نام‌گذاری نسلی و ساده را معرفی کرد تا کاربران بتوانند به راحتی قدرت و جدید بودن یک دستگاه را تشخیص دهند. Wi-Fi 6 معادل 802.11ax، Wi-Fi 5 معادل 802.11ac و به همین ترتیب است. <strong>Wi-Fi 6E</strong> نیز به دستگاه‌هایی اشاره دارد که از باند فرکانسی جدید 6 گیگاهرتز پشتیبانی می‌کنند.
+                    </p>
+                </div>
+            </section>
+
+            <section id="components" class="section-card">
+                <h2>تجهیزات اصلی شبکه بی‌سیم</h2>
+                
+                <h3>اکسس پوینت (Access Point - AP)</h3>
+                <p>
+                    اکسس پوینت دستگاهی است که یک پل بین شبکه بی‌سیم و شبکه کابلی ایجاد می‌کند. دستگاه‌های شما (لپ‌تاپ، موبایل) به صورت بی‌سیم به AP متصل می‌شوند و AP از طریق یک کابل اترنت به شبکه اصلی (سوئیچ یا روتر) متصل است. نام شبکه بی‌سیمی که شما به آن متصل می‌شوید (SSID)، توسط AP منتشر می‌شود.
+                </p>
+                <div class="img-container">
+                    <img src="https://placehold.co/600x300/121221/00f5d4?text=Wireless Client <--> Access Point <--> Wired Network" alt="نقش اکسس پوینت">
+                </div>
+                
+                <h3>کنترلر شبکه بی‌سیم (Wireless LAN Controller - WLC)</h3>
+                <p>
+                    در شبکه‌های بزرگ با ده‌ها یا صدها اکسس پوینت، پیکربندی و مدیریت تک‌تک آن‌ها غیرممکن است. یک <strong>WLC</strong> دستگاهی متمرکز است که تمام APهای شبکه را به صورت یکجا مدیریت، پیکربندی و نظارت می‌کند. APها در این مدل "سبک" یا "Lightweight" هستند و تمام هوشمندی در WLC متمرکز است.
+                </p>
+                 <div class="img-container">
+                    <img src="https://placehold.co/700x400/121221/ab47bc?text=WLC Manages (AP1, AP2, AP3...)" alt="معماری مبتنی بر WLC">
+                     <p class="img-caption">یک WLC مدیریت متمرکز ده‌ها اکسس پوینت را فراهم می‌کند.</p>
+                </div>
+            </section>
+
+            <section id="security" class="section-card">
+                <h2>امنیت بی‌سیم: از WEP تا WPA3</h2>
+                <p>از آنجایی که سیگنال‌های Wi-Fi در هوا پخش می‌شوند، امنیت آن‌ها از شبکه‌های کابلی بسیار حیاتی‌تر است. پروتکل‌های امنیتی بی‌سیم در طول زمان به شدت تکامل یافته‌اند.</p>
+                
+                <h3>WEP (Wired Equivalent Privacy) - <em>منسوخ و ناامن</em></h3>
+                <p>اولین پروتکل امنیتی بود و همانطور که از نامش پیداست، تلاش می‌کرد امنیتی معادل شبکه‌های کابلی فراهم کند. اما به دلیل ضعف‌های شدید در الگوریتم رمزنگاری RC4 و استفاده از یک کلید ثابت (Static Key)، امروزه می‌توان آن را در چند دقیقه هک کرد. <strong>هرگز از WEP استفاده نکنید.</strong></p>
+
+                <h3>WPA (Wi-Fi Protected Access) - <em>منسوخ</em></h3>
+                <p>
+                    به عنوان یک راه‌حل موقت برای جایگزینی WEP معرفی شد. WPA از پروتکل <strong>TKIP (Temporal Key Integrity Protocol)</strong> استفاده می‌کرد که کلیدهای رمزنگاری را به صورت پویا تغییر می‌داد و امنیت را بهبود می‌بخشید. اما TKIP نیز دارای ضعف‌هایی بود و امروزه استفاده از آن توصیه نمی‌شود.
+                </p>
+
+                <h3>WPA2 (Wi-Fi Protected Access 2) - <em>استاندارد رایج</em></h3>
+                <p>
+                    یک جهش بزرگ در امنیت بی‌سیم. WPA2 از الگوریتم رمزنگاری بسیار قدرتمند <strong>AES (Advanced Encryption Standard)</strong> در حالت CCMP استفاده می‌کند که استاندارد طلایی رمزنگاری است. برای سال‌ها، WPA2 امن‌ترین گزینه بوده و هنوز هم به طور گسترده‌ای استفاده می‌شود.
+                    <br>دو حالت دارد:
+                    <ul>
+                        <li><strong>Personal (WPA2-PSK):</strong> با استفاده از یک کلمه عبور مشترک (Pre-Shared Key).</li>
+                        <li><strong>Enterprise:</strong> با استفاده از یک سرور RADIUS برای احراز هویت هر کاربر به صورت مجزا.</li>
+                    </ul>
+                </p>
+
+                <h3>WPA3 - <em>استاندارد جدید و امن‌ترین</em></h3>
+                <p>
+                    جدیدترین و امن‌ترین استاندارد. WPA3 چندین بهبود کلیدی ارائه می‌دهد:
+                    <ul>
+                        <li><strong>SAE (Simultaneous Authentication of Equals):</strong> جایگزین PSK می‌شود و حتی اگر رمز عبور شما ضعیف باشد، از حملات dictionary آفلاین جلوگیری می‌کند.</li>
+                        <li><strong>رمزنگاری قوی‌تر:</strong> رمزنگاری 192 بیتی در حالت Enterprise ارائه می‌دهد.</li>
+                        <li><strong>Forward Secrecy:</strong> حتی اگر یک مهاجم کلید یک جلسه را بدزدد، نمی‌تواند ترافیک‌های قبلی را رمزگشایی کند.</li>
+                    </ul>
+                </p>
+                <div class="golden-tip">
+                    <p class="tip-title">فیلتر کردن MAC Address یک ابزار امنیتی نیست!</p>
+                    <p>
+                        برخی فکر می‌کنند با محدود کردن دسترسی فقط به دستگاه‌هایی با آدرس MAC مشخص، امنیت را بالا می‌برند. اما یک مهاجم می‌تواند به سادگی ترافیک شبکه را شنود کرده، یک MAC آدرس مجاز را پیدا کند و آدرس MAC دستگاه خود را به آن تغییر دهد (MAC Spoofing). این تکنیک فقط یک لایه مبهم‌سازی (Obscurity) است و نباید به عنوان یک اقدام امنیتی جدی در نظر گرفته شود. همیشه از رمزنگاری قوی مانند WPA2 یا WPA3 استفاده کنید.
+                    </p>
+                </div>
+            </section>
+            
+            <section id="deployment" class="section-card">
+                <h2>پیاده‌سازی شبکه بی‌سیم: هنر پوشش‌دهی</h2>
+                
+                <h3>پیمایش سایت (Site Survey)</h3>
+                <p>
+                    قبل از نصب اکسس پوینت‌ها، باید یک <strong>Site Survey</strong> انجام شود. این فرآیند شامل تحلیل محیط برای شناسایی موارد زیر است:
+                    <ul>
+                        <li><strong>منابع تداخل (Interference):</strong> دستگاه‌های مایکروویو، تلفن‌های بی‌سیم، شبکه‌های همسایه و حتی مصالح ساختمانی (مانند فلز و بتن).</li>
+                        <li><strong>مناطق مرده (Dead Zones):</strong> نقاطی که سیگنال Wi-Fi به آن‌ها نمی‌رسد.</li>
+                        <li><strong>تعیین مکان بهینه APها:</strong> پیدا کردن بهترین نقطه برای نصب APها جهت دستیابی به حداکثر پوشش و حداقل تداخل.</li>
+                    </ul>
+                     ابزارهایی مانند <strong>تحلیلگر طیف (Spectrum Analyzer)</strong> و نرم‌افزارهای تحلیل Wi-Fi برای این کار استفاده می‌شوند.
+                </p>
+                <div class="img-container">
+                    <img src="https://placehold.co/800x450/121221/ffD700?text=Wi-Fi+Heatmap" alt="نقشه حرارتی پوشش سیگنال وای‌فای">
+                    <p class="img-caption">یک نقشه حرارتی (Heatmap) قدرت سیگنال را در نقاط مختلف یک ساختمان نشان می‌دهد.</p>
+                </div>
+
+                <h3>انتخاب کانال</h3>
+                <p>
+                    تداخل بین اکسس پوینت‌هایی که روی کانال‌های یکسان یا هم‌پوشان کار می‌کنند، کارایی شبکه را به شدت کاهش می‌دهد. در باند 2.4 گیگاهرتز، فقط کانال‌های <strong>1، 6، و 11</strong> کاملاً غیرهم‌پوشان هستند. هنگام طراحی شبکه، باید APهای مجاور را روی این سه کانال تنظیم کرد تا از تداخل با یکدیگر جلوگیری شود.
+                </p>
+                <pre>
+   AP 1 (Channel 1)    AP 2 (Channel 6)    AP 3 (Channel 1)
+   / \                 / \                 / \
+  /   \               /   \               /   \
+ Client Group A      Client Group B      Client Group C
+                </pre>
+            </section>
+        </main>
+        
+        <footer>
+            <p>شما اکنون بر دنیای نامرئی امواج رادیویی که زیربنای ارتباطات مدرن است، مسلط شده‌اید.</p>
+            <p>بر اساس مفاهیم کاربردی و حیاتی فصل هشتم کتاب CompTIA Network+</p>
+        </footer>
+    </div>
+
+</body>
+</html>

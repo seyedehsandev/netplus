@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پرونده‌های شبکه: عیب‌یابی عملی - فصل دوازدهم Network+</title>
+    <style>
+        /* --- General Styles & "Network Detective / Forensics Lab" Theme --- */
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap');
+
+        :root {
+            --bg-color: #111d2c; /* Deep Midnight Blue */
+            --primary-card-bg: #1e293b;
+            --secondary-card-bg: #334155;
+            --text-color: #cbd5e1;
+            --primary-accent: #facc15; /* Highlighter Yellow */
+            --secondary-accent: #60a5fa; /* Cool Blue */
+            --header-font-weight: 700;
+            --border-radius: 4px;
+            --font-code: 'Source Code Pro', 'Vazirmatn', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 2.1;
+            font-size: 18px;
+        }
+
+        .container { width: 90%; max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+
+        /* --- Header & Navigation --- */
+        header { text-align: center; padding: 80px 20px; }
+        header h1 {
+            font-family: var(--font-code);
+            font-size: 3rem;
+            color: var(--primary-accent);
+            text-shadow: 0 0 10px var(--primary-accent);
+            border: 2px dashed var(--primary-accent);
+            display: inline-block;
+            padding: 15px 35px;
+            margin-bottom: 20px;
+        }
+        header p { font-size: 1.5rem; color: var(--text-color); opacity: 0.8;}
+
+        nav {
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+        }
+        nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; }
+        nav ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 10px 22px;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+        nav ul li a:hover, nav ul li a.active {
+            background-color: var(--primary-accent);
+            color: var(--bg-color);
+        }
+        
+        /* --- Main Content & Sections --- */
+        .section-card {
+            background-color: var(--primary-card-bg);
+            margin-bottom: 50px;
+            padding: 40px;
+            border: 1px solid var(--secondary-card-bg);
+            border-left: 5px solid var(--secondary-accent);
+        }
+        
+        .section-card h2 {
+            font-family: var(--font-code);
+            font-size: 2.8rem;
+            color: var(--primary-accent);
+            margin-bottom: 25px;
+        }
+
+        h3 { font-family: var(--font-code); font-size: 2rem; color: var(--secondary-accent); margin: 35px 0 20px 0; }
+        strong { font-weight: bold; color: var(--primary-accent); }
+
+        pre { background: #000; color: #f0f0f0; padding: 25px; border-radius: var(--border-radius); font-family: var(--font-code); direction: ltr; margin: 20px 0; font-size: 1.1rem; border: 1px solid var(--secondary-card-bg); }
+        
+        /* --- Image Styling --- */
+        .img-container { margin: 30px 0; text-align: center; }
+        .img-container img { max-width: 100%; height: auto; border-radius: var(--border-radius); border: 1px solid var(--secondary-accent); }
+        .img-caption { font-size: 0.9rem; color: #94a3b8; margin-top: 10px; font-style: italic; }
+        
+        /* --- Detective's Notes --- */
+        .detective-note {
+            background-color: rgba(250, 204, 21, 0.05);
+            border: 1px solid var(--primary-accent);
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .detective-note::before {
+            content: "TOP SECRET";
+            position: absolute;
+            top: 20px; right: -50px;
+            transform: rotate(-45deg);
+            background-color: var(--primary-accent);
+            color: var(--bg-color);
+            padding: 5px 50px;
+            font-weight: bold;
+            font-family: var(--font-code);
+        }
+        .detective-note .note-title { font-weight: 900; color: var(--primary-accent); font-size: 1.4rem; margin-bottom: 10px; }
+        .detective-note .note-title::before { content: '✔️ سرنخ کلیدی: '; }
+        
+        /* --- Scenario Box --- */
+        .scenario-box {
+            background-color: var(--secondary-card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            border: 1px dashed var(--secondary-accent);
+            margin-top: 20px;
+        }
+        .scenario-box .scenario-title { font-size: 1.8rem; font-weight: bold; color: var(--secondary-accent); margin-bottom: 15px; }
+        .scenario-box p.symptom { font-style: italic; }
+
+        /* --- Footer --- */
+        footer { text-align: center; padding: 40px 20px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>[ THE NETWORK FILES ]</h1>
+        <p>فصل دوازدهم: کالبدشکافی مشکلات و عیب‌یابی عملی شبکه</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#methodology">مرام‌نامه کارآگاه</a></li>
+            <li><a href="#osi-approach">کالبدشکافی لایه‌ای</a></li>
+            <li><a href="#common-cases">پرونده‌های رایج</a></li>
+            <li><a href="#wireless-cases">پرونده‌های بی‌سیم</a></li>
+            <li><a href="#advanced-tools">آزمایشگاه پیشرفته</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <main>
+            <section id="methodology" class="section-card">
+                <h2>مرام‌نامه کارآگاه: متدولوژی عیب‌یابی</h2>
+                <p>
+                    موفقیت در عیب‌یابی، بیش از آنکه به شانس بستگی داشته باشد، به یک <strong>فرآیند ساختاریافته</strong> وابسته است. عجله و اقدامات تصادفی، معمولاً مشکل را بدتر می‌کنند. یک کارآگاه شبکه حرفه‌ای همیشه از یک متدولوژی اثبات‌شده پیروی می‌کند. (این متدولوژی در فصل ۹ معرفی شد و اینجا بر اهمیت آن در عمل تأکید می‌کنیم).
+                </p>
+                <div class="img-container">
+                    <img src="https://placehold.co/1000x300/1e293b/cbd5e1?text=Identify -> Theorize -> Test -> Plan -> Implement -> Verify -> Document" alt="فلوچارت متدولوژی عیب‌یابی">
+                    <p class="img-caption">فرآیند هفت مرحله‌ای عیب‌یابی، نقشه راه شما در هر پرونده‌ای است.</p>
+                </div>
+            </section>
+            
+            <section id="osi-approach" class="section-card">
+                <h2>کالبدشکافی لایه‌ای: تفکر بر اساس مدل OSI</h2>
+                <p>مدل OSI بهترین ابزار ذهنی برای عیب‌یابی است. با شروع از لایه ۱ و حرکت به سمت بالا (Bottom-Up) یا برعکس (Top-Down)، می‌توانید مشکل را به صورت سیستماتیک محدود و پیدا کنید.</p>
+
+                <h3>لایه ۱: صحنه جرم فیزیکی</h3>
+                <p><strong>سوال کلیدی:</strong> "آیا اتصال فیزیکی وجود دارد؟"</p>
+                <ul>
+                    <li><strong>چراغ‌های لینک (Link Lights):</strong> آیا روی کارت شبکه و پورت سوئیچ، چراغ سبز و ثابت یا چشمک‌زن وجود دارد؟ نبودن چراغ یعنی مشکل فیزیکی.</li>
+                    <li><strong>کابل‌ها:</strong> آیا کابل به درستی متصل است؟ آیا آسیب فیزیکی دیده؟ آیا نوع کابل درست است؟ (Straight-Through/Crossover)</li>
+                    <li><strong>دستگاه‌ها:</strong> آیا دستگاه روشن است؟ آیا سوئیچ یا روتر برق دارد؟</li>
+                </ul>
+
+                <h3>لایه ۲: سرنخ‌های پیوند داده</h3>
+                 <p><strong>سوال کلیدی:</strong> "آیا دستگاه‌ها در شبکه محلی می‌توانند یکدیگر را پیدا کنند؟"</p>
+                 <ul>
+                     <li><strong>مشکلات VLAN:</strong> آیا پورت کاربر در VLAN درستی قرار دارد؟ آیا پورت ترانک بین سوئیچ‌ها به درستی پیکربندی شده؟</li>
+                     <li><strong>حلقه‌های سوئیچینگ (Loops):</strong> آیا چراغ‌های تمام سوئیچ‌ها به سرعت و به طور دیوانه‌وار چشمک می‌زنند؟ این می‌تواند نشانه یک Broadcast Storm ناشی از حلقه و عدم کارکرد صحیح STP باشد.</li>
+                     <li><strong>جدول MAC سوئیچ:</strong> آیا سوئیچ آدرس MAC کاربر را یاد گرفته است؟</li>
+                 </ul>
+
+                 <h3>لایه ۳: بازجویی از شبکه</h3>
+                 <p><strong>سوال کلیدی:</strong> "آیا آدرس‌دهی و مسیریابی درست است؟"</p>
+                 <ul>
+                     <li><strong>پیکربندی IP:</strong> با <code>ipconfig</code> یا <code>ifconfig</code>، آیا کاربر یک آدرس IP، سابنت مسک و Default Gateway صحیح دریافت کرده؟</li>
+                     <li><strong>APIPA Address:</strong> آیا آدرس IP در محدوده <code>169.254.x.x</code> است؟ این یعنی کامپیوتر نتوانسته با سرور DHCP ارتباط برقرار کند.</li>
+                     <li><strong>تست اتصال:</strong> با <code>ping</code> ابتدا Gateway را تست کنید، سپس یک آدرس IP در اینترنت (مانند 8.8.8.8) را.</li>
+                     <li><strong>مسیریابی:</strong> با <code>tracert</code> یا <code>traceroute</code> مسیر بسته‌ها را ردیابی کنید تا ببینید در کجا متوقف می‌شوند.</li>
+                 </ul>
+                 
+                 <div class="detective-note">
+                    <p class="note-title">تفاوت "Request Timed Out" و "Destination Host Unreachable"</p>
+                    <p>
+                        این دو پیام از دستور <code>ping</code> سرنخ‌های متفاوتی به شما می‌دهند.
+                        <ul>
+                            <li><strong>Request Timed Out:</strong> یعنی درخواست شما به مقصد رسید (یا حداقل مسیری به سمت آن وجود داشت) اما هیچ پاسخی در زمان مقرر دریافت نشد. این می‌تواند ناشی از ترافیک سنگین یا فایروالی باشد که پاسخ را مسدود می‌کند.</li>
+                            <li><strong>Destination Host Unreachable:</strong> یعنی کامپیوتر یا روتر شما اصلاً مسیری برای رسیدن به آن آدرس IP پیدا نکرده است. مشکل معمولاً در مسیریابی یا در شبکه محلی خود شماست (مثلاً Default Gateway اشتباه).</li>
+                        </ul>
+                    </p>
+                </div>
+
+                 <h3>لایه ۴ به بعد: بررسی‌های سطح بالا</h3>
+                  <p><strong>سوال کلیدی:</strong> "آیا یک سرویس خاص مسدود یا غیرفعال است؟"</p>
+                  <ul>
+                      <li><strong>فایروال‌ها و ACLs:</strong> آیا یک قانون در فایروال یا یک Access Control List روی روتر، پورت مورد نیاز را مسدود کرده است؟</li>
+                      <li><strong>DNS:</strong> آیا ترجمه نام به درستی انجام می‌شود؟ <code>nslookup</code> بهترین دوست شماست. اگر می‌توانید یک IP را پینگ کنید اما نام دامنه را نه، مشکل قطعاً از DNS است.</li>
+                  </ul>
+            </section>
+            
+             <section id="common-cases" class="section-card">
+                 <h2>پرونده‌های کلاسیک: سناریوهای رایج</h2>
+                 
+                 <div class="scenario-box">
+                    <h3 class="scenario-title">پرونده شماره 12-A: "اینترنت من قطع است!"</h3>
+                    <p class="symptom"><strong>علائم:</strong> یک کاربر گزارش می‌دهد که نمی‌تواند هیچ وب‌سایتی را باز کند، در حالی که همکار بغل‌دستی او مشکلی ندارد.</p>
+                    <h4 style="margin-top:20px;">مراحل بازجویی: (رویکرد Bottom-Up)</h4>
+                    <ol>
+                        <li><strong>لایه ۱:</strong> بررسی کابل شبکه کاربر و چراغ‌های لینک روی کامپیوتر و سوئیچ. (فرض: چراغ‌ها روشن و کابل سالم است).</li>
+                        <li><strong>لایه ۳:</strong> روی کامپیوتر کاربر، دستور <code>ipconfig /all</code> را اجرا می‌کنیم.
+                           <br>- <strong>سرنخ:</strong> می‌بینیم که آدرس IP کاربر <code>169.254.100.200</code> است! (APIPA)
+                           <br>- <strong>تئوری:</strong> کامپیوتر نتوانسته از سرور DHCP آدرس بگیرد.
+                        </li>
+                        <li><strong>تست تئوری:</strong> بررسی می‌کنیم آیا سرور DHCP فعال است. از همکار کناری که شبکه دارد، آدرس DHCP سرور را می‌پرسیم (<code>192.168.1.5</code>). از کامپیوتر کاربر، تلاش می‌کنیم سرور را پینگ کنیم: <code>ping 192.168.1.5</code>. (فرض: پینگ موفق نیست).</li>
+                        <li><strong>تحلیل لایه ۲:</strong> حالا که می‌دانیم مشکل در رسیدن به DHCP سرور است، آیا مشکل از VLAN است؟ از مدیر سوئیچ می‌خواهیم تا پیکربندی پورت کاربر را بررسی کند.
+                            <br>- <strong>علت اصلی:</strong> مشخص می‌شود پورت کاربر به اشتباه در VLAN مهمان قرار داده شده که به DHCP سرور داخلی دسترسی ندارد.
+                        </li>
+                        <li><strong>راه‌حل:</strong> تغییر VLAN پورت به VLAN صحیح کاربران. سپس اجرای <code>ipconfig /release</code> و <code>ipconfig /renew</code> روی کامپیوتر کاربر. مشکل حل شد.</li>
+                    </ol>
+                </div>
+
+                <div class="scenario-box">
+                    <h3 class="scenario-title">پرونده شماره 12-B: "اینترنت خیلی کند است!"</h3>
+                    <p class="symptom"><strong>علائم:</strong> تمام کاربران شرکت از کندی شدید در باز کردن وب‌سایت‌های خارجی شکایت دارند، اما سرعت دسترسی به سرورهای داخلی عادی است.</p>
+                    <h4 style="margin-top:20px;">مراحل بازجویی:</h4>
+                    <ol>
+                        <li><strong>شناسایی دامنه:</strong> مشکل فقط برای ترافیک اینترنت است و سراسری است. این به روتر مرزی (Edge Router) و لینک WAN اشاره دارد.</li>
+                        <li><strong>تئوری:</strong> لینک اینترنت شرکت به حد اشباع رسیده است (Bandwidth Saturation).</li>
+                        <li><strong>تست تئوری:</strong> وارد سیستم نظارت بر شبکه (NMS) می‌شویم و گراف‌های استفاده از پهنای باند را برای لینک WAN بررسی می‌کنیم.
+                           <br>- <strong>سرنخ:</strong> مشاهده می‌کنیم که پهنای باند خروجی (Upload) برای چند ساعت گذشته به طور مداوم روی 100% قرار دارد.
+                        </li>
+                        <li><strong>پیدا کردن مجرم:</strong> از یک تحلیلگر پروتکل (مانند NetFlow Analyzer روی روتر) برای مشاهده بیشترین مصرف‌کنندگان پهنای باند استفاده می‌کنیم.
+                           <br>- <strong>علت اصلی:</strong> مشخص می‌شود یک سرور در داخل شبکه که به یک بدافزار آلوده شده، در حال ارسال حجم عظیمی از داده به عنوان بخشی از یک حمله DDoS است.
+                        </li>
+                        <li><strong>راه‌حل:</strong> قرنطینه کردن سرور آلوده، پاک‌سازی بدافزار و تحلیل امنیتی برای جلوگیری از وقوع مجدد.</li>
+                    </ol>
+                </div>
+            </section>
+            
+            <section id="wireless-cases" class="section-card">
+                 <h2>پرونده‌های بی‌سیم: مشکلات در هوا</h2>
+                <div class="scenario-box">
+                    <h3 class="scenario-title">پرونده شماره 12-C: "وای‌فای من مدام قطع و وصل می‌شود."</h3>
+                    <p class="symptom"><strong>علائم:</strong> یک کاربر در یک نقطه خاص از دفتر نمی‌تواند یک اتصال پایدار Wi-Fi داشته باشد.</p>
+                    <h4 style="margin-top:20px;">مراحل بازجویی:</h4>
+                    <ol>
+                        <li><strong>قدرت سیگنال:</strong> از ابزار تحلیلگر Wi-Fi روی لپ‌تاپ یا موبایل استفاده می‌کنیم تا قدرت سیگنال را در مکان کاربر اندازه‌گیری کنیم. (قدرت سیگنال با dBm منفی اندازه‌گیری می‌شود؛ -67dBm خوب است، -80dBm ضعیف است).
+                             <br>- <strong>سرنخ:</strong> سیگنال در آن نقطه ضعیف است.
+                        </li>
+                         <li><strong>تداخل:</strong> کانال‌های مورد استفاده در آن منطقه را بررسی می‌کنیم.
+                             <br>- <strong>سرنخ:</strong> می‌بینیم که AP نزدیک به کاربر روی کانال 6 تنظیم شده، اما یک شبکه قوی از دفتر همسایه نیز روی همین کانال در حال فعالیت است (Co-Channel Interference).
+                         </li>
+                          <li><strong>تئوری:</strong> تداخل هم-کانال باعث کاهش کیفیت و پایداری سیگنال شده است.</li>
+                         <li><strong>راه‌حل:</strong> کانال اکسس پوینت را به یکی از کانال‌های غیرهم‌پوشان دیگر (1 یا 11) که خلوت‌تر است، تغییر می‌دهیم. مشکل حل شد.</li>
+                    </ol>
+                </div>
+            </section>
+            
+             <section id="advanced-tools" class="section-card">
+                 <h2>آزمایشگاه پیشرفته: نگاهی عمیق‌تر به ابزارها</h2>
+                 <h3>Wireshark: میکروسکوپ شبکه</h3>
+                 <p>Wireshark به شما اجازه می‌دهد تا تک‌تک پکت‌ها را ببینید. با استفاده از فیلترها می‌توانید به سرعت به سرنخ‌های مهم برسید.</p>
+                 <ul>
+                    <li><strong><code>tcp.flags.reset == 1</code>:</strong> فیلتر کردن برای دیدن پکت‌های TCP Reset که نشان‌دهنده بسته شدن ناگهانی یک ارتباط است (مثلاً توسط یک فایروال).</li>
+                    <li><strong><code>tcp.analysis.retransmission</code>:</strong> فیلتر کردن برای دیدن بسته‌هایی که مجدداً ارسال شده‌اند. تعداد زیاد این بسته‌ها نشانه وجود مشکلاتی مانند از دست رفتن بسته (Packet Loss) در شبکه است.</li>
+                    <li><strong>Follow TCP Stream:</strong> با راست کلیک روی یک پکت و انتخاب این گزینه، می‌توانید کل مکالمه (Conversation) بین دو دستگاه را به صورت بازسازی‌شده مشاهده کنید.</li>
+                 </ul>
+                 <div class="detective-note">
+                     <p class="note-title">آیا همه‌چیز به کابل برمی‌گردد؟</p>
+                    <p>
+                        یک ضرب‌المثل قدیمی در بین متخصصان شبکه می‌گوید: "همیشه مشکل از DNS است." ضرب‌المثل دیگری می‌گوید: "همیشه مشکل از لایه فیزیکی است." واقعیت این است که بخش بزرگی از مشکلات شبکه، به خصوص مشکلات مربوط به "قطعی کامل"، ریشه در مسائل ساده لایه ۱ (کابل اشتباه یا معیوب) و مسائل لایه ۷ (پیکربندی اشتباه DNS) دارند. قبل از غرق شدن در تحلیل‌های پیچیده، همیشه این دو مورد را بررسی کنید.
+                    </p>
+                </div>
+             </section>
+
+        </main>
+        
+        <footer>
+            <p>هر مشکل شبکه یک معماست. با دانش، ابزار مناسب و رویکردی ساختاریافته، هیچ پرونده‌ای برای شما لاینحل باقی نخواهد ماند.</p>
+            <p>پایان دوره Network+، آغاز سفر شما به عنوان یک کارآگاه حرفه‌ای شبکه.</p>
+        </footer>
+    </div>
+</body>
+</html>
