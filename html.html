@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>کاوشگر جامع شبکه: از صفر تا HTTP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Chosen Palette: Warm Neutrals, Deep Blues, and Mint Green accents -->
+    <!-- Application Structure Plan: The application is re-architected into four main thematic sections for a more logical deep-dive: 1) The interactive "Packet's Journey" remains the core learning path. 2) "Layers & Protocols" provides a foundational understanding of the communication models (OSI/TCP) and transport protocols. 3) "Addressing & Routing" details the core logic of how data finds its way (IP, MAC, Subnets, Routing). 4) "Network Services" covers essential infrastructure components (DNS, NAT, Load Balancing). This thematic structure allows users to explore concepts in a structured manner, with a sticky sidebar for seamless navigation between these deep-dive sections. -->
+    <!-- Visualization & Content Choices: 
+        - Journey Diagram (HTML/CSS/JS): Retained and enhanced to visually represent more steps from the PDF. Interaction remains a guided, step-by-step animation.
+        - OSI vs TCP/IP Model (HTML/CSS/JS): New interactive diagram. Goal -> Compare/Inform. Viz -> Two side-by-side columns of layers built with HTML/Tailwind. Interaction -> Clicking a layer highlights it and displays its function, showing relationships between the two models. Justification -> More engaging than a static table.
+        - CIDR Explainer (HTML/JS): New interactive element. Goal -> Explain/Organize. Viz -> A slider or input to change the CIDR prefix, which dynamically updates the subnet mask and host count. Justification -> Makes an abstract concept (subnetting) tangible.
+        - DNS Records Table (HTML/Tailwind): New static visualization. Goal -> Organize/Inform. Viz -> A styled table. Interaction -> None. Justification -> Best format for presenting structured reference data like record types.
+        - All content from the PDF is now mapped to one of these sections, ensuring comprehensive coverage.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+      body {
+        font-family: "Vazirmatn", sans-serif;
+        background-color: #fdfbf6;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      .chart-container {
+        position: relative;
+        height: 350px;
+        max-height: 45vh;
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+      }
+      .packet {
+        transition: all 1s ease-in-out;
+        box-shadow: 0 0 15px rgba(37, 99, 235, 0.7);
+      }
+      .scroll-reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+      }
+      .scroll-reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .layer-box {
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .layer-box.active {
+        background-color: #1e40af;
+        color: white;
+        transform: scale(1.05);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+    </style>
+  </head>
+  <body class="text-slate-800">
+    <div class="container mx-auto px-4 py-8">
+      <header class="text-center mb-16">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900">
+          کاوشگر جامع شبکه
+        </h1>
+        <p class="text-lg text-slate-600 mt-2">
+          یک سفر تعاملی از مفاهیم پایه تا سرویس‌های پیشرفته شبکه
+        </p>
+      </header>
+
+      <div class="flex flex-col md:flex-row gap-8">
+        <aside class="md:w-1/4 lg:w-1/5">
+          <nav
+            class="sticky top-8 bg-white p-4 rounded-xl shadow-lg border border-slate-200"
+          >
+            <h3 class="font-bold text-lg mb-4 border-b pb-2 text-slate-800">
+              بخش‌های اصلی
+            </h3>
+            <ul class="space-y-3">
+              <li>
+                <a
+                  href="#journey"
+                  class="nav-link block font-medium text-slate-700 hover:text-blue-700 transition-colors"
+                  >🚀 سفر یک بسته</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#layers"
+                  class="nav-link block font-medium text-slate-700 hover:text-blue-700 transition-colors"
+                  >🏗️ لایه‌ها و پروتکل‌ها</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#addressing"
+                  class="nav-link block font-medium text-slate-700 hover:text-blue-700 transition-colors"
+                  >📍 آدرس‌دهی و مسیریابی</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#services"
+                  class="nav-link block font-medium text-slate-700 hover:text-blue-700 transition-colors"
+                  >🌐 سرویس‌های شبکه</a
+                >
+              </li>
+            </ul>
+          </nav>
+        </aside>
+
+        <main class="md:w-3/4 lg:w-4/5 space-y-16">
+          <section
+            id="journey"
+            class="scroll-reveal bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-slate-200"
+          >
+            <h2 class="text-3xl font-bold mb-4 text-slate-900">
+              🚀 سفر یک بسته داده
+            </h2>
+            <p class="mb-8 text-slate-600">
+              در این بخش، ماجراجویی یک بسته داده را از لحظه‌ای که شما آدرس یک
+              وب‌سایت را وارد می‌کنید تا زمانی که صفحه برای شما نمایش داده
+              می‌شود، مرحله به مرحله دنبال می‌کنیم. برای شروع، روی دکمه "مرحله
+              بعد" کلیک کنید.
+            </p>
+
+            <div
+              class="w-full bg-slate-100 p-4 rounded-lg border border-slate-200 mb-6 overflow-hidden"
+            >
+              <div
+                id="journey-diagram"
+                class="relative h-64 md:h-80 flex items-center justify-between px-4 md:px-10"
+              >
+                <div class="text-center z-10">
+                  <div class="text-4xl">💻</div>
+                  <div class="font-bold mt-1 text-sm">کامپیوتر شما</div>
+                </div>
+                <div class="text-center z-10">
+                  <div class="text-4xl">📡</div>
+                  <div class="font-bold mt-1 text-sm">روتر محلی</div>
+                </div>
+                <div
+                  class="absolute top-1/2 left-0 w-full h-1 bg-slate-300"
+                ></div>
+                <div
+                  id="packet"
+                  class="packet absolute top-1/2 -mt-3 w-6 h-6 bg-blue-600 rounded-full border-2 border-white z-20"
+                  style="right: 5%"
+                ></div>
+                <div class="text-center z-10">
+                  <div class="text-4xl">☁️</div>
+                  <div class="font-bold mt-1 text-sm">اینترنت</div>
+                </div>
+                <div class="text-center z-10">
+                  <div class="text-4xl">🗄️</div>
+                  <div class="font-bold mt-1 text-sm">سرور وب</div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="journey-explanation"
+              class="bg-blue-50 border-r-4 border-blue-500 p-4 rounded-lg min-h-[120px] transition-all duration-300"
+            >
+              <h3 id="step-title" class="font-bold text-lg mb-2 text-blue-800">
+                مرحله ۰: آماده برای شروع
+              </h3>
+              <p id="step-description" class="text-slate-700">
+                برای دیدن اولین مرحله از سفر بسته، روی دکمه زیر کلیک کنید.
+              </p>
+            </div>
+
+            <div class="text-center mt-6">
+              <button
+                id="next-step-btn"
+                class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 shadow-md"
+              >
+                مرحله بعد
+              </button>
+            </div>
+          </section>
+
+          <section
+            id="layers"
+            class="scroll-reveal bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-slate-200"
+          >
+            <h2 class="text-3xl font-bold mb-6 text-slate-900">
+              🏗️ لایه‌ها و پروتکل‌ها
+            </h2>
+            <p class="mb-8 text-slate-600">
+              ارتباطات شبکه بر اساس مدل‌های لایه‌ای ساخته شده‌اند. این مدل‌ها
+              وظایف پیچیده را به بخش‌های کوچک‌تر و قابل مدیریت تقسیم می‌کنند. با
+              کلیک روی هر لایه، وظیفه آن را مشاهده کنید.
+            </p>
+            <div class="flex flex-col md:flex-row gap-8">
+              <div class="flex-1">
+                <h3 class="text-xl font-bold text-center mb-4">مدل OSI</h3>
+                <div id="osi-layers" class="space-y-2">
+                  <div
+                    class="layer-box bg-slate-100 p-3 rounded-md text-center border"
+                    data-info="لایه ۷: با نرم‌افزارهای کاربردی مانند مرورگر وب در ارتباط است. پروتکل‌هایی مثل HTTP و FTP در این لایه کار می‌کنند."
+                  >
+                    کاربرد (Application)
+                  </div>
+                  <div
+                    class="layer-box bg-slate-100 p-3 rounded-md text-center border"
+                    data-info="لایه ۶: وظیفه قالب‌بندی و رمزگذاری داده‌ها را بر عهده دارد تا برای لایه کاربرد قابل فهم باشد (مانند TLS/SSL)."
+                  >
+                    ارائه (Presentation)
+                  </div>
+                  <div
+                    class="layer-box bg-slate-100 p-3 rounded-md text-center border"
+                    data-info="لایه ۵: مسئول ایجاد، مدیریت و خاتمه دادن به جلسات ارتباطی بین دو دستگاه است."
+                  >
+                    جلسه (Session)
+                  </div>
+                  <div
+                    class="layer-box bg-slate-100 p-3 rounded-md text-center border"
+                    data-info="لایه ۴: وظیفه کنترل جریان داده و تضمین رسیدن صحیح آن را با پروتکل‌هایی مانند TCP (قابل اعتماد) و UDP (سریع) بر عهده دارد."
+                  >
+                    انتقال (Transport)
+                  </div>
+                  <div
+                    class="layer-box bg-slate-100 p-3 rounded-md text-center border"
+                    data-info="لایه ۳: بسته‌ها را آدرس‌دهی و مسیریابی می‌کند تا از مبدأ به مقصد برسند. پروتکل IP در این لایه است."
+                  >
+                    شبکه (Network)
+                  </div>
+                  <div
+                    class="layer-box bg-slate-100 p-3 rounded-md text-center border"
+                    data-info="لایه ۲: داده‌ها را در فریم‌ها قرار می‌دهد و با استفاده از آدرس MAC، آن‌ها را در شبکه محلی جابجا می‌کند."
+                  >
+                    پیوند داده (Data-Link)
+                  </div>
+                  <div
+                    class="layer-box bg-slate-100 p-3 rounded-md text-center border"
+                    data-info="لایه ۱: مسئول انتقال بیت‌های داده بر روی رسانه فیزیکی مانند کابل یا امواج رادیویی است."
+                  >
+                    فیزیکی (Physical)
+                  </div>
+                </div>
+              </div>
+              <div
+                id="layer-info-box"
+                class="md:w-1/3 bg-green-50 p-4 rounded-lg border-r-4 border-green-500 h-fit"
+              >
+                <p class="text-slate-700">
+                  روی یک لایه کلیک کنید تا توضیحات آن را ببینید.
+                </p>
+              </div>
+            </div>
+            <h3 class="text-2xl font-bold mt-12 mb-4 text-center">
+              مقایسه: TCP در مقابل UDP
+            </h3>
+            <div class="chart-container mt-4">
+              <canvas id="tcpUdpChart"></canvas>
+            </div>
+          </section>
+
+          <section
+            id="addressing"
+            class="scroll-reveal bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-slate-200"
+          >
+            <h2 class="text-3xl font-bold mb-6 text-slate-900">
+              📍 آدرس‌دهی و مسیریابی
+            </h2>
+            <p class="mb-8 text-slate-600">
+              هر دستگاه در شبکه برای شناسایی و یافتن مسیر به آدرس نیاز دارد. در
+              این بخش با انواع آدرس‌ها و نحوه مسیریابی آشنا می‌شویم.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h3 class="font-bold text-lg mb-2">آدرس MAC و IP ⛓️</h3>
+                <p class="text-sm text-slate-600">
+                  <b>آدرس MAC:</b> شناسه سخت‌افزاری و دائمی کارت شبکه برای
+                  ارتباط در شبکه محلی (LAN). <b>آدرس IP:</b> شناسه منطقی و قابل
+                  تغییر دستگاه در یک شبکه بزرگتر مانند اینترنت.
+                </p>
+              </div>
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h3 class="font-bold text-lg mb-2">جدول ARP 📋</h3>
+                <p class="text-sm text-slate-600">
+                  پروتکل ARP آدرس‌های IP را به آدرس‌های MAC متناظرشان در شبکه
+                  محلی نگاشت می‌کند. دستگاه‌ها این نگاشت‌ها را در یک جدول ذخیره
+                  می‌کنند تا از ارسال درخواست‌های تکراری جلوگیری شود.
+                </p>
+              </div>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">زیرشبکه‌ها و CIDR</h3>
+            <p class="mb-6 text-slate-600">
+              برای مدیریت بهتر آدرس‌ها، شبکه‌ها به زیرشبکه‌های کوچک‌تر تقسیم
+              می‌شوند. CIDR یک روش فشرده برای نمایش آدرس IP و ماسک زیرشبکه آن
+              است. با تغییر اسلایدر، تأثیر آن را ببینید.
+            </p>
+            <div class="bg-slate-100 p-6 rounded-lg border">
+              <label for="cidr-slider" class="block font-bold mb-2"
+                >پیشوند CIDR: /<span id="cidr-value">24</span></label
+              >
+              <input
+                id="cidr-slider"
+                type="range"
+                min="8"
+                max="30"
+                value="24"
+                class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <div class="mt-4 text-center">
+                <p>
+                  <strong>آدرس نمونه:</strong> 192.168.1.10/<span id="cidr-text"
+                    >24</span
+                  >
+                </p>
+                <p>
+                  <strong>ماسک زیرشبکه:</strong>
+                  <span id="subnet-mask" class="font-mono">255.255.255.0</span>
+                </p>
+                <p>
+                  <strong>تعداد میزبان‌ها:</strong>
+                  <span id="host-count">254</span>
+                </p>
+              </div>
+            </div>
+            <h3 class="text-2xl font-bold mt-12 mb-4">جدول مسیریابی</h3>
+            <p class="mb-6 text-slate-600">
+              مسیریاب‌ها از جدول مسیریابی استفاده می‌کنند تا تصمیم بگیرند
+              بسته‌ها را به کدام مسیر ارسال کنند. این جدول شامل شبکه‌های مقصد و
+              دروازه (Gateway) بعدی برای رسیدن به آن‌هاست.
+            </p>
+            <div class="overflow-x-auto">
+              <table
+                class="w-full text-sm text-left text-slate-500 rounded-lg overflow-hidden"
+              >
+                <thead class="text-xs text-slate-700 uppercase bg-slate-200">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">مقصد شبکه</th>
+                    <th scope="col" class="px-6 py-3">ماسک زیرشبکه</th>
+                    <th scope="col" class="px-6 py-3">دروازه (Gateway)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="bg-white border-b">
+                    <td class="px-6 py-4 font-mono">0.0.0.0 (مسیر پیش‌فرض)</td>
+                    <td class="px-6 py-4 font-mono">0.0.0.0</td>
+                    <td class="px-6 py-4 font-mono">192.168.1.1</td>
+                  </tr>
+                  <tr class="bg-slate-50 border-b">
+                    <td class="px-6 py-4 font-mono">10.0.0.0</td>
+                    <td class="px-6 py-4 font-mono">255.0.0.0</td>
+                    <td class="px-6 py-4 font-mono">192.168.1.254</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section
+            id="services"
+            class="scroll-reveal bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-slate-200"
+          >
+            <h2 class="text-3xl font-bold mb-6 text-slate-900">
+              🌐 سرویس‌های شبکه
+            </h2>
+            <p class="mb-8 text-slate-600">
+              علاوه بر ارتباطات پایه، سرویس‌های مختلفی در شبکه وجود دارند که
+              عملکرد اینترنت مدرن را ممکن می‌سازند.
+            </p>
+
+            <h3 class="text-2xl font-bold mb-4">سیستم نام دامنه (DNS)</h3>
+            <p class="mb-4 text-slate-600">
+              DNS نام‌های دامنه قابل خواندن برای انسان را به آدرس‌های IP ترجمه
+              می‌کند. انواع مختلفی از رکوردها برای اهداف متفاوت وجود دارند:
+            </p>
+            <div class="overflow-x-auto">
+              <table
+                class="w-full text-sm text-left text-slate-500 rounded-lg overflow-hidden"
+              >
+                <thead class="text-xs text-slate-700 uppercase bg-slate-200">
+                  <tr>
+                    <th class="px-6 py-3">نوع رکورد</th>
+                    <th class="px-6 py-3">مثال</th>
+                    <th class="px-6 py-3">کاربرد</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="bg-white border-b">
+                    <td class="px-6 py-4 font-bold">A</td>
+                    <td class="px-6 py-4 font-mono">93.184.216.34</td>
+                    <td>نگاشت نام به آدرس IPv4</td>
+                  </tr>
+                  <tr class="bg-slate-50 border-b">
+                    <td class="px-6 py-4 font-bold">AAAA</td>
+                    <td class="px-6 py-4 font-mono">2606:2800:..</td>
+                    <td>نگاشت نام به آدرس IPv6</td>
+                  </tr>
+                  <tr class="bg-white border-b">
+                    <td class="px-6 py-4 font-bold">CNAME</td>
+                    <td class="px-6 py-4 font-mono">www.example.com</td>
+                    <td>ایجاد نام مستعار برای یک دامنه دیگر</td>
+                  </tr>
+                  <tr class="bg-slate-50 border-b">
+                    <td class="px-6 py-4 font-bold">MX</td>
+                    <td class="px-6 py-4 font-mono">mail.example.com</td>
+                    <td>مشخص کردن سرور ایمیل برای یک دامنه</td>
+                  </tr>
+                  <tr class="bg-white">
+                    <td class="px-6 py-4 font-bold">TXT</td>
+                    <td class="px-6 py-4 font-mono">"v=spf1..."</td>
+                    <td>ذخیره متن برای اهداف مختلف (مانند تایید هویت)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="text-2xl font-bold mt-12 mb-4">NAT و Load Balancer</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-bold text-lg mb-2">ترجمه آدرس شبکه (NAT) 🛡️</h4>
+                <p class="text-sm text-slate-600">
+                  به چندین دستگاه در شبکه خصوصی اجازه می‌دهد تا از یک IP عمومی
+                  استفاده کنند. این کار به صرفه‌جویی در آدرس‌های IPv4 و افزایش
+                  امنیت کمک می‌کند. رنج‌های IP مانند `192.168.0.0/16` و
+                  `10.0.0.0/8` برای استفاده خصوصی رزرو شده‌اند.
+                </p>
+              </div>
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-bold text-lg mb-2">
+                  متعادل‌کننده بار (Load Balancer) ⚖️
+                </h4>
+                <p class="text-sm text-slate-600">
+                  ترافیک ورودی را بین چندین سرور توزیع می‌کند تا عملکرد و
+                  پایداری سرویس را بهبود بخشد. الگوریتم‌های رایج شامل Round
+                  Robin (نوبتی) و Least Connections (کمترین اتصال) هستند.
+                </p>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Reveal on Scroll
+        const revealElements = document.querySelectorAll(".scroll-reveal");
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+              }
+            });
+          },
+          { threshold: 0.1 }
+        );
+        revealElements.forEach((el) => observer.observe(el));
+
+        // TCP vs UDP Chart
+        const ctx = document.getElementById("tcpUdpChart").getContext("2d");
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: [
+              "قابلیت اطمینان",
+              "سرعت",
+              "سربار (Overhead)",
+              "مبتنی بر اتصال",
+            ],
+            datasets: [
+              {
+                label: "TCP",
+                data: [10, 6, 8, 10],
+                backgroundColor: "rgba(37, 99, 235, 0.7)",
+              },
+              {
+                label: "UDP",
+                data: [2, 10, 3, 2],
+                backgroundColor: "rgba(16, 185, 129, 0.7)",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: (v) =>
+                    v === 10 ? "بالا" : v > 4 ? "متوسط" : "پایین",
+                },
+              },
+            },
+            plugins: {
+              title: {
+                display: true,
+                text: "مقایسه ویژگی‌های TCP و UDP",
+                font: { size: 16, family: "Vazirmatn" },
+              },
+              tooltip: {
+                bodyFont: { family: "Vazirmatn" },
+                titleFont: { family: "Vazirmatn" },
+              },
+            },
+          },
+        });
+
+        // Packet Journey Interaction
+        const packet = document.getElementById("packet");
+        const stepTitle = document.getElementById("step-title");
+        const stepDescription = document.getElementById("step-description");
+        const nextStepBtn = document.getElementById("next-step-btn");
+        const steps = [
+          {
+            title: "مرحله ۱: ترجمه نام (DNS)",
+            description:
+              "شما `example.com` را وارد می‌کنید. کامپیوتر یک درخواست DNS به سرور ارسال می‌کند تا نام دامنه را به آدرس IP ترجمه کند.",
+            packetPos: "5%",
+          },
+          {
+            title: "مرحله ۲: پیدا کردن گام بعدی (ARP)",
+            description:
+              "کامپیوتر برای ارسال بسته در شبکه محلی، به آدرس MAC مسیریاب نیاز دارد. یک درخواست ARP ارسال می‌کند تا آدرس MAC آن را پیدا کند.",
+            packetPos: "25%",
+          },
+          {
+            title: "مرحله ۳: ارسال به مسیریاب (NAT)",
+            description:
+              "بسته به مسیریاب می‌رسد. مسیریاب با استفاده از NAT، آدرس IP خصوصی شما را با IP عمومی خود جایگزین کرده و بسته را به اینترنت می‌فرستد.",
+            packetPos: "48%",
+          },
+          {
+            title: "مرحله ۴: مسیریابی در اینترنت",
+            description:
+              "بسته شما از طریق چندین مسیریاب در اینترنت سفر می‌کند تا به سرور وب برسد.",
+            packetPos: "75%",
+          },
+          {
+            title: "مرحله ۵: رسیدن به سرور (HTTP)",
+            description:
+              "بسته به سرور می‌رسد. سرور درخواست HTTP را پردازش کرده و محتوای صفحه را در بسته‌ای جدید برای بازگشت آماده می‌کند.",
+            packetPos: "95%",
+          },
+          {
+            title: "مرحله ۶: سفر بازگشت",
+            description:
+              "بسته حاوی اطلاعات وب‌سایت، مسیر را به صورت معکوس طی کرده و توسط مسیریاب به کامپیوتر شما تحویل داده می‌شود.",
+            packetPos: "5%",
+          },
+          {
+            title: "پایان سفر!",
+            description:
+              "بسته رسید و مرورگر صفحه را نمایش می‌دهد. این چرخه برای هر درخواستی تکرار می‌شود. برای شروع مجدد، کلیک کنید.",
+            packetPos: "5%",
+          },
+        ];
+        let currentStep = -1;
+        nextStepBtn.addEventListener("click", () => {
+          currentStep = (currentStep + 1) % steps.length;
+          const step = steps[currentStep];
+          stepTitle.innerText = step.title;
+          stepDescription.innerText = step.description;
+          packet.style.right = step.packetPos;
+          nextStepBtn.innerText =
+            currentStep === steps.length - 1 ? "شروع مجدد" : "مرحله بعد";
+        });
+
+        // OSI Layers Interaction
+        const layerBoxes = document.querySelectorAll("#osi-layers .layer-box");
+        const infoBox = document.getElementById("layer-info-box");
+        layerBoxes.forEach((box) => {
+          box.addEventListener("click", () => {
+            layerBoxes.forEach((b) => b.classList.remove("active"));
+            box.classList.add("active");
+            infoBox.innerHTML = `<p class="text-slate-800 font-medium">${box.dataset.info}</p>`;
+          });
+        });
+
+        // CIDR Slider
+        const cidrSlider = document.getElementById("cidr-slider");
+        const cidrValue = document.getElementById("cidr-value");
+        const cidrText = document.getElementById("cidr-text");
+        const subnetMask = document.getElementById("subnet-mask");
+        const hostCount = document.getElementById("host-count");
+        cidrSlider.addEventListener("input", (e) => {
+          const prefix = parseInt(e.target.value);
+          cidrValue.textContent = prefix;
+          cidrText.textContent = prefix;
+          hostCount.textContent =
+            2 ** (32 - prefix) - 2 > 0 ? 2 ** (32 - prefix) - 2 : 0;
+          let mask = [];
+          for (let i = 0; i < 4; i++) {
+            let n = Math.min(prefix, 8);
+            mask.push(256 - 2 ** (8 - n));
+            prefix -= n;
+          }
+          subnetMask.textContent = mask.join(".");
+        });
+        cidrSlider.dispatchEvent(new Event("input"));
+      });
+    </script>
+  </body>
+</html>
